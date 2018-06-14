@@ -1,5 +1,8 @@
 package com.pi.appraisal.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import all.InstanciaTipo;
+import all.Organizacion;
 
 @Entity
 @Table(name = "Instancia", schema = "dbo", catalog = "Appraisal")
@@ -18,6 +25,7 @@ public class Instancia {
 	private Organizacion organizacion;
 	private InstanciaTipo instanciaTipo;
 	private String nombre;
+	private Set<Evidencia> evidencias = new HashSet<>(0);
 
 	public Instancia() {}
 
@@ -26,6 +34,13 @@ public class Instancia {
 		this.organizacion = organizacion;
 		this.instanciaTipo = instanciaTipo;
 		this.nombre = nombre;
+	}
+
+	public Instancia(InstanciaTipo instanciaTipo, Organizacion organizacion, String nombre, Set<Evidencia> evidencias) {
+		this.instanciaTipo = instanciaTipo;
+		this.organizacion = organizacion;
+		this.nombre = nombre;
+		this.evidencias = evidencias;
 	}
 
 	@Id
@@ -66,6 +81,15 @@ public class Instancia {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "instancia")
+	public Set<Evidencia> getEvidencias() {
+		return this.evidencias;
+	}
+
+	public void setEvidencias(Set<Evidencia> evidencias) {
+		this.evidencias = evidencias;
 	}
 
 }

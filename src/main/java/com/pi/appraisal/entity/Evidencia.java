@@ -13,28 +13,29 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import all.Instancia;
+import all.PracticaEspecifica;
+
 @Entity
 @Table(name = "Evidencia", schema = "dbo", catalog = "Appraisal")
 public class Evidencia {
 
 	private int id;
+	private Instancia instancia;
 	private PracticaEspecifica practicaEspecifica;
-	private int instancia;
 	private Set<Artefacto> artefactos = new HashSet<>(0);
 	private Set<Hipervinculo> hipervinculos = new HashSet<>(0);
 
 	public Evidencia() {}
 
-	public Evidencia(int id, PracticaEspecifica practicaEspecifica, int instancia) {
-		this.id = id;
-		this.practicaEspecifica = practicaEspecifica;
+	public Evidencia(Instancia instancia, PracticaEspecifica practicaEspecifica) {
 		this.instancia = instancia;
+		this.practicaEspecifica = practicaEspecifica;
 	}
 
-	public Evidencia(int id, PracticaEspecifica practicaEspecifica, int instancia, Set<Artefacto> artefactos, Set<Hipervinculo> hipervinculos) {
-		this.id = id;
-		this.practicaEspecifica = practicaEspecifica;
+	public Evidencia(Instancia instancia, PracticaEspecifica practicaEspecifica, Set<Artefacto> artefactos, Set<Hipervinculo> hipervinculos) {
 		this.instancia = instancia;
+		this.practicaEspecifica = practicaEspecifica;
 		this.artefactos = artefactos;
 		this.hipervinculos = hipervinculos;
 	}
@@ -51,6 +52,16 @@ public class Evidencia {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "instancia", nullable = false)
+	public Instancia getInstancia() {
+		return this.instancia;
+	}
+
+	public void setInstancia(Instancia instancia) {
+		this.instancia = instancia;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "practica_especifica", nullable = false)
 	public PracticaEspecifica getPracticaEspecifica() {
 		return this.practicaEspecifica;
@@ -58,15 +69,6 @@ public class Evidencia {
 
 	public void setPracticaEspecifica(PracticaEspecifica practicaEspecifica) {
 		this.practicaEspecifica = practicaEspecifica;
-	}
-
-	@Column(name = "instancia", nullable = false)
-	public int getInstancia() {
-		return this.instancia;
-	}
-
-	public void setInstancia(int instancia) {
-		this.instancia = instancia;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "evidencia")
