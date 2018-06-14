@@ -65,4 +65,18 @@ public class UsuarioRol {
 	public void setUsuarios(Set<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
+	
+	public enum Priviledge {
+		ORGANIZACION,
+		ADMINISTRADOR;
+		
+		public static Priviledge from(UsuarioRol rol) {
+			switch(rol.id) {
+			    case 2:
+				    return ADMINISTRADOR;
+				default:
+					return ORGANIZACION;
+			}
+		}
+	}
 }

@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,6 +42,11 @@ public class Artefacto {
 		this.nombre = nombre;
 		this.tipo = tipo;
 		this.fecha = fecha;
+	}
+	
+	@PrePersist
+	protected void onCreate() {
+		fecha = new Date();
 	}
 
 	@Id
