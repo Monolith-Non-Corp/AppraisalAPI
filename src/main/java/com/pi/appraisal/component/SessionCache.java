@@ -15,16 +15,18 @@ import org.springframework.stereotype.Component;
 
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.UsuarioRol.Priviledge;
+import com.pi.appraisal.util.Credentials;
 
 @Component("session")
 public class SessionCache {
 
-	private static final long TIMEOUT = 1000L * 60L * 60L;
+	public static final long SESSION_TIMEOUT = 1000L * 60L * 60L;
+	public static final long REQUEST_TIMEOUT = 1000L * 10L;
 	private static final BiFunction<UUID, Session, Session> FUNC = (i, session) -> {
 		if (session != null) {
 			long oldTime = session.expires.getTime();
 			long newTime = new Date().getTime();
-			if (newTime - oldTime <= SessionCache.TIMEOUT) {
+			if (newTime - oldTime <= SessionCache.SESSION_TIMEOUT) {
 				return session.renew();
 			}
 		}
@@ -39,17 +41,17 @@ public class SessionCache {
 		this.cacheMap.putIfAbsent(token, Session.of(token, usuario));
 		return usuario;
 	}
-	
-	public Optional<Priviledge> authenticate(String token, String preHash, String postHash) {
-		return getSession(UUID.fromString(token)).map(session -> {
+
+	public Optional<Priviledge> authenticate(Credentials credentials, String preHash) {
+		return getSession(credentials.getToken()).filter(ignored -> !credentials.isExpired()).map(session -> {
 			String testHash = session.key.toString() + ":" + preHash;
 			boolean match = false;
 			try {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				byte[] bytes = digest.digest(testHash.getBytes(StandardCharsets.UTF_8));
 				String hash = Base64.getEncoder().encodeToString(bytes);
-				match = hash.equals(postHash);
-			} catch(Exception e) {
+				match = credentials.isHash(hash);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			return match ? session.priviledge : null;
@@ -67,24 +69,24 @@ public class SessionCache {
 			cacheMap.compute(it.next(), SessionCache.FUNC);
 		}
 	}
-	
+
 	private static class Session {
-		
+
 		UUID key;
 		Date expires;
 		Priviledge priviledge;
-		
+
 		Session(UUID key, Date expires, Priviledge priviledge) {
 			this.key = key;
 			this.expires = expires;
 			this.priviledge = priviledge;
 		}
-		
+
 		private Session renew() {
 			this.expires = new Date();
 			return this;
 		}
-		
+
 		private static Session of(UUID token, Usuario usuario) {
 			UUID key = UUID.randomUUID();
 			usuario.setKey(key);
