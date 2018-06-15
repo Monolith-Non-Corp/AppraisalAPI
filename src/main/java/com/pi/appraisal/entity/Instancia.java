@@ -14,9 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import all.InstanciaTipo;
-import all.Organizacion;
-
 @Entity
 @Table(name = "Instancia", schema = "dbo", catalog = "Appraisal")
 public class Instancia {

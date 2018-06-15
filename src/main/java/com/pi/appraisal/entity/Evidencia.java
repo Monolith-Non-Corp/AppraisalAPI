@@ -13,9 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import all.Instancia;
-import all.PracticaEspecifica;
-
 @Entity
 @Table(name = "Evidencia", schema = "dbo", catalog = "Appraisal")
 public class Evidencia {
