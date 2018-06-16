@@ -36,46 +36,42 @@ public class ArtefactoController {
 	@PostMapping
 	public ResponseEntity<String> upload(@RequestBody Evidencia evidencia, @RequestParam("file") MultipartFile file,
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, "{evidencia}/{file}/{token}/{hash}")
-				.filter(priviledge -> priviledge == Priviledge.ORGANIZACION).map(ignored -> {
-					if (!file.isEmpty()) {
-						try {
-							Artefacto artefacto = new Artefacto();
-							artefacto.setArchivo(file.getBytes());
-							artefacto.setNombre(file.getOriginalFilename());
-							artefacto.setTipo(file.getContentType());
-							artefacto.setEvidencia(evidencia);
-							artefactoRepository.save(artefacto);
-						} catch (IOException e) {
-							e.printStackTrace();
-							return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-									.body("Unable to read File bytes");
-						}
-						return ResponseEntity.ok("File was uploaded successfully");
-					} else {
-						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-								.body("File is empty or has no content");
-					}
-				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+		return session.authenticate(credentials, Priviledge.ORGANIZACION).map(ignored -> {
+			if (!file.isEmpty()) {
+				try {
+					Artefacto artefacto = new Artefacto();
+					artefacto.setArchivo(file.getBytes());
+					artefacto.setNombre(file.getOriginalFilename());
+					artefacto.setTipo(file.getContentType());
+					artefacto.setEvidencia(evidencia);
+					artefactoRepository.save(artefacto);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to read File bytes");
+				}
+				return ResponseEntity.ok("File was uploaded successfully");
+			} else {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File is empty or has no content");
+			}
+		}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
 	@DeleteMapping
 	public ResponseEntity<String> delete(@RequestBody Artefacto artefacto,
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, "{artefacto}/{file}/{token}/{hash}")
-				.filter(priviledge -> priviledge == Priviledge.ORGANIZACION).map(ignored -> {
-					artefactoRepository.delete(artefacto);
-					return ResponseEntity.ok("File was uploaded successfully");
-				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+		return session.authenticate(credentials, Priviledge.ORGANIZACION).map(ignored -> {
+			artefactoRepository.delete(artefacto);
+			return ResponseEntity.ok("File was uploaded successfully");
+		}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
 	@GetMapping("{id}/{name}")
 	public ResponseEntity<byte[]> getFile(@PathVariable("id") Integer id, @PathVariable("name") String name,
-			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, "{id}/{name}/{token}/{hash}")
-				.filter(priviledge -> priviledge == Priviledge.ORGANIZACION)
-				.map(ignored -> artefactoRepository.findByIdAndNombre(id, name).orElse(null))
-				.map(a -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(a.getArchivo()))
+			@RequestBody() Evidencia evidencia, @RequestHeader("credentials") Credentials credentials) {
+		return session.authenticate(credentials, Priviledge.ORGANIZACION)
+				.map(ignored -> artefactoRepository.findByIdAndNombreAndEvidencia(id, name, evidencia).orElse(null))
+				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+						.body(artefacto.getArchivo()))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 }
