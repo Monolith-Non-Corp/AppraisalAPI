@@ -9,8 +9,8 @@ import com.pi.appraisal.component.SessionCache;
 public class Credentials {
 
 	private UUID token;
-	private Long timestamp;
 	private String hash;
+	private Long timestamp;
 
 	public Credentials() {}
 
@@ -38,20 +38,20 @@ public class Credentials {
 		this.token = token;
 	}
 
-	public Long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
-
 	public String getHash() {
 		return hash;
 	}
 
 	public void setHash(String hash) {
 		this.hash = hash;
+	}
+
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 	
 }

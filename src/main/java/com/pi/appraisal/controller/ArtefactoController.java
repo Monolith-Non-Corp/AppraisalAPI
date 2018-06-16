@@ -20,8 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Artefacto;
 import com.pi.appraisal.entity.Evidencia;
-import com.pi.appraisal.entity.UsuarioRol.Priviledge;
+import static com.pi.appraisal.entity.UsuarioRol.Priviledge.*;
 import com.pi.appraisal.repository.ArtefactoRepository;
+import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.util.Credentials;
 
 @RestController
@@ -31,12 +32,16 @@ public class ArtefactoController {
 	@Autowired
 	private ArtefactoRepository artefactoRepository;
 	@Autowired
+	private EvidenciaRepository evidenciaRepository;
+	@Autowired
 	private SessionCache session;
 
 	@PostMapping
-	public ResponseEntity<String> upload(@RequestBody Evidencia evidencia, @RequestParam("file") MultipartFile file,
+	public ResponseEntity<String> upload(@RequestBody Evidencia body, @RequestParam("file") MultipartFile file,
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, Priviledge.ORGANIZACION).map(ignored -> {
+		return session.authenticate(credentials, ORGANIZACION).map(usuario -> {
+			return evidenciaRepository.getEvidenciaFromUsuario(usuario, body);
+		}).map(evidencia -> {
 			if (!file.isEmpty()) {
 				try {
 					Artefacto artefacto = new Artefacto();
@@ -57,19 +62,19 @@ public class ArtefactoController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> delete(@RequestBody Artefacto artefacto,
+	public ResponseEntity<String> delete(@RequestBody Artefacto body,
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, Priviledge.ORGANIZACION).map(ignored -> {
-			artefactoRepository.delete(artefacto);
+		return session.authenticate(credentials, ORGANIZACION).map(usuario -> {
+			artefactoRepository.delete(body);
 			return ResponseEntity.ok("File was uploaded successfully");
 		}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
 	@GetMapping("{id}/{name}")
 	public ResponseEntity<byte[]> getFile(@PathVariable("id") Integer id, @PathVariable("name") String name,
-			@RequestBody() Evidencia evidencia, @RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, Priviledge.ORGANIZACION)
-				.map(ignored -> artefactoRepository.findByIdAndNombreAndEvidencia(id, name, evidencia).orElse(null))
+			@RequestBody() Evidencia body, @RequestHeader("credentials") Credentials credentials) {
+		return session.authenticate(credentials, ORGANIZACION)
+				.map(ignored -> artefactoRepository.findByIdAndNombreAndEvidencia(id, name, body).orElse(null))
 				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
 						.body(artefacto.getArchivo()))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());

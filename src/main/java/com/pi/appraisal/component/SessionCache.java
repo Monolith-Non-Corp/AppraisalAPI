@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.UsuarioRol.Priviledge;
 import com.pi.appraisal.util.Credentials;
+import com.pi.appraisal.util.Option;
 
 @Component("session")
 public class SessionCache {
@@ -42,8 +42,8 @@ public class SessionCache {
 		return usuario;
 	}
 
-	public Optional<Usuario> authenticate(Credentials credentials, Priviledge priviledge) {
-		if (credentials.isExpired()) return Optional.empty();
+	public Option<Usuario> authenticate(Credentials credentials, Priviledge priviledge) {
+		if (credentials.isExpired()) return Option.empty();
 		return getSession(credentials.getToken()).filter(session -> session.priviledge == priviledge).map(session -> {
 			String testHash = String.format("{%s}:{%d}", session.key.toString(), credentials.getTimestamp());
 			boolean match = false;
@@ -59,9 +59,9 @@ public class SessionCache {
 		});
 	}
 
-	private Optional<Session> getSession(UUID token) {
+	private Option<Session> getSession(UUID token) {
 		this.flush();
-		return Optional.ofNullable(cacheMap.get(token));
+		return Option.ofNullable(cacheMap.get(token));
 	}
 
 	private void flush() {

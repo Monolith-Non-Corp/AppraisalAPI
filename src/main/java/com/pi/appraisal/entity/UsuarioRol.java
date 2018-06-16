@@ -16,14 +16,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Usuario_Rol", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class UsuarioRol {
 
 	private int id;
 	private String descripcion;
 	private Set<Usuario> usuarios = new HashSet<>(0);
 
-	public UsuarioRol() {}
+	public UsuarioRol() {
+	}
 
 	public UsuarioRol(int id, String descripcion) {
 		this.id = id;
@@ -65,17 +66,18 @@ public class UsuarioRol {
 	public void setUsuarios(Set<Usuario> usuarios) {
 		this.usuarios = usuarios;
 	}
-	
+
 	public enum Priviledge {
-		ORGANIZACION,
-		ADMINISTRADOR;
-		
+		ORGANIZACION, ADMINISTRADOR, ANY;
+
 		public static Priviledge from(UsuarioRol rol) {
-			switch(rol.id) {
-			    case 2:
-				    return ADMINISTRADOR;
-				default:
-					return ORGANIZACION;
+			switch (rol.id) {
+			case 1:
+				return ORGANIZACION;
+			case 2:
+				return ADMINISTRADOR;
+			default:
+				return ANY;
 			}
 		}
 	}
