@@ -26,7 +26,7 @@ public class Credentials {
 		return now - timestamp > SessionCache.REQUEST_TIMEOUT;
 	}
 	
-	public boolean isHash(String hash) {
+	public boolean hashEquals(String hash) {
 		return Objects.equals(this.hash, hash);
 	}
 

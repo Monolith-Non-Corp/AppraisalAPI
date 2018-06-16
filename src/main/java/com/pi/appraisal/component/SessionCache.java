@@ -37,24 +37,25 @@ public class SessionCache {
 
 	public Usuario init(Usuario usuario) {
 		this.flush();
-		UUID token = UUID.randomUUID();
-		this.cacheMap.putIfAbsent(token, Session.of(token, usuario));
+		Session session  = Session.of(usuario);
+		this.cacheMap.put(session.token, session);
 		return usuario;
 	}
 
-	public Optional<Priviledge> authenticate(Credentials credentials, String preHash) {
-		return getSession(credentials.getToken()).filter(ignored -> !credentials.isExpired()).map(session -> {
-			String testHash = session.key.toString() + ":" + preHash;
+	public Optional<Usuario> authenticate(Credentials credentials, Priviledge priviledge) {
+		if (credentials.isExpired()) return Optional.empty();
+		return getSession(credentials.getToken()).filter(session -> session.priviledge == priviledge).map(session -> {
+			String testHash = String.format("{%s}:{%d}", session.key.toString(), credentials.getTimestamp());
 			boolean match = false;
 			try {
 				MessageDigest digest = MessageDigest.getInstance("SHA-256");
 				byte[] bytes = digest.digest(testHash.getBytes(StandardCharsets.UTF_8));
 				String hash = Base64.getEncoder().encodeToString(bytes);
-				match = credentials.isHash(hash);
+				match = credentials.hashEquals(hash);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			return match ? session.priviledge : null;
+			return match ? new Usuario(session.userId) : null;
 		});
 	}
 
@@ -73,10 +74,12 @@ public class SessionCache {
 	private static class Session {
 
 		UUID key;
+		UUID token;
 		Date expires;
+		Integer userId;
 		Priviledge priviledge;
 
-		Session(UUID key, Date expires, Priviledge priviledge) {
+		Session(UUID key, UUID token, Integer userId, Date expires, Priviledge priviledge) {
 			this.key = key;
 			this.expires = expires;
 			this.priviledge = priviledge;
@@ -87,11 +90,12 @@ public class SessionCache {
 			return this;
 		}
 
-		private static Session of(UUID token, Usuario usuario) {
+		private static Session of(Usuario usuario) {
+			UUID token = UUID.randomUUID();
 			UUID key = UUID.randomUUID();
 			usuario.setKey(key);
 			usuario.setToken(token);
-			return new Session(key, new Date(), Priviledge.from(usuario.getUsuarioRol()));
+			return new Session(key, token, usuario.getId(), new Date(), Priviledge.from(usuario.getUsuarioRol()));
 		}
 	}
 }

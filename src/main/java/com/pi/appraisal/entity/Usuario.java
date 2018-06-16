@@ -38,6 +38,10 @@ public class Usuario {
 	@Transient private UUID key;
 
 	public Usuario() {}
+	
+	public Usuario(int id) {
+		this.id = id;
+	}
 
 	public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password) {
 		this.id = id;
