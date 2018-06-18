@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -21,9 +22,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class PracticaEspecifica {
 
 	private int id;
+	@JsonIgnore
 	private MetaEspecifica metaEspecifica;
 	private String nombre;
 	private String descripcion;
+	@JsonIgnore
 	private Set<Evidencia> evidencias = new HashSet<>(0);
 
 	public PracticaEspecifica() {}

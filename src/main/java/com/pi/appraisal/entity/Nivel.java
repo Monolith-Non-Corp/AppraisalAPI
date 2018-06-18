@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -20,7 +21,9 @@ public class Nivel {
 
 	private int lvl;
 	private String descripcion;
+	@JsonIgnore
 	private Set<AreaProceso> areaProcesos = new HashSet<>(0);
+	@JsonIgnore
 	private Set<Organizacion> organizacions = new HashSet<>(0);
 
 	public Nivel() {}

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -22,7 +23,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Artefacto {
 
 	private int id;
+	@JsonIgnore
 	private Evidencia evidencia;
+	@JsonIgnore
 	private byte[] archivo;
 	private String nombre;
 	private String tipo;

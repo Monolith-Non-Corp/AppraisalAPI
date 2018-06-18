@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -22,9 +23,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Instancia {
 
 	private int id;
+	@JsonIgnore
 	private Organizacion organizacion;
 	private InstanciaTipo instanciaTipo;
 	private String nombre;
+	@JsonIgnore
 	private Set<Evidencia> evidencias = new HashSet<>(0);
 
 	public Instancia() {}

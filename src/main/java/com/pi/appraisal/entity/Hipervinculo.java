@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Hipervinculo {
 
 	private int id;
+	@JsonIgnore
 	private Evidencia evidencia;
 	private String link;
 	private Date fecha;
