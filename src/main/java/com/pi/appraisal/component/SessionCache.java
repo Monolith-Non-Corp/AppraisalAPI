@@ -20,8 +20,8 @@ import com.pi.appraisal.util.Option;
 @Component("session")
 public class SessionCache {
 
-	public static final long SESSION_TIMEOUT = 1000L * 60L * 60L;
-	public static final long REQUEST_TIMEOUT = 1000L * 10L;
+	public static final long SESSION_TIMEOUT = 1000L * 60L * 60L * 6L;
+	public static final long REQUEST_TIMEOUT = 1000L * 60L * 15L;
 	private static final BiFunction<UUID, Session, Session> FUNC = (i, session) -> {
 		if (session != null) {
 			long oldTime = session.expires.getTime();
