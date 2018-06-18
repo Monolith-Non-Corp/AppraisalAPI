@@ -1,6 +1,7 @@
 package com.pi.appraisal.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,46 +38,58 @@ public class ArtefactoController {
 	private SessionCache session;
 
 	@PostMapping
-	public ResponseEntity<String> upload(@RequestBody Evidencia body, @RequestParam("file") MultipartFile file,
+	public ResponseEntity<Artefacto> upload(@RequestBody Evidencia in, @RequestParam("file") MultipartFile file,
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION).map(usuario -> {
-			return evidenciaRepository.getEvidenciaFromUsuario(usuario, body);
-		}).map(evidencia -> {
-			if (!file.isEmpty()) {
-				try {
+		return session.authenticate(credentials, ORGANIZACION)
+				.map(usuario -> evidenciaRepository.findByUsuario(in, usuario)).map(evidencia -> {
+					if (file.isEmpty()) {
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();
+					}
+					byte[] bytes;
+					try {
+						bytes = file.getBytes();
+					} catch (IOException e) {
+						e.printStackTrace();
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();
+					}
 					Artefacto artefacto = new Artefacto();
-					artefacto.setArchivo(file.getBytes());
+					artefacto.setArchivo(bytes);
 					artefacto.setNombre(file.getOriginalFilename());
 					artefacto.setTipo(file.getContentType());
 					artefacto.setEvidencia(evidencia);
-					artefactoRepository.save(artefacto);
-				} catch (IOException e) {
-					e.printStackTrace();
-					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unable to read File bytes");
-				}
-				return ResponseEntity.ok("File was uploaded successfully");
-			} else {
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File is empty or has no content");
-			}
-		}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+					return ResponseEntity.ok(artefactoRepository.save(artefacto));
+				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> delete(@RequestBody Artefacto body,
+	public ResponseEntity<String> delete(@RequestBody Artefacto in, 
 			@RequestHeader("credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION).map(usuario -> {
-			artefactoRepository.delete(body);
-			return ResponseEntity.ok("File was uploaded successfully");
-		}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+		return session.authenticate(credentials, ORGANIZACION)
+				.map(usuario -> artefactoRepository.findByUsuario(in, usuario))
+				.map(artefacto -> {
+					artefactoRepository.delete(artefacto);
+					return ResponseEntity.ok("File was deleted successfully");
+				})
+				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
 	@GetMapping("{id}/{name}")
 	public ResponseEntity<byte[]> getFile(@PathVariable("id") Integer id, @PathVariable("name") String name,
-			@RequestBody() Evidencia body, @RequestHeader("credentials") Credentials credentials) {
+			@RequestBody() Evidencia in, @RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
-				.map(ignored -> artefactoRepository.findByIdAndNombreAndEvidencia(id, name, body).orElse(null))
-				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.map(usuario -> artefactoRepository.findByUsuario(id, name, in, usuario))
+				.map(artefacto -> ResponseEntity.ok()
+						.contentType(MediaType.APPLICATION_OCTET_STREAM)
 						.body(artefacto.getArchivo()))
+				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+	}
+	
+	@GetMapping
+	public ResponseEntity<List<Artefacto>> getAll(@RequestBody() Evidencia in, 
+			@RequestHeader("credentials") Credentials credentials) {
+		return session.authenticate(credentials, ORGANIZACION)
+				.map(usuario -> artefactoRepository.findAllByUsuario(in, usuario))
+				.map(list -> ResponseEntity.ok(list))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 }
