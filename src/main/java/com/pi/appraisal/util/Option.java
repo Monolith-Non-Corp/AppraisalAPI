@@ -81,14 +81,6 @@ public class Option<T> {
 		}
 	}
 
-	public Option<T> pipe(Runnable runnable) {
-		Objects.requireNonNull(runnable);
-		if (isPresent()) {
-			runnable.run();
-		}
-		return this;
-	}
-
 	public Option<T> or(Supplier<? extends Option<? extends T>> supplier) {
 		Objects.requireNonNull(supplier);
 		if (isPresent()) {
