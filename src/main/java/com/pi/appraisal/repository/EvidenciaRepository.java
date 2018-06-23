@@ -12,9 +12,9 @@ public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
 	void delete(Evidencia evidencia);
 	
 	@Query("SELECT e FROM Evidencia e "
-			+ "JOIN Instancia i ON e.instancia = i.id "
-			+ "JOIN Organizacion o ON i.organizacion = o.id "
-			+ "WHERE e.id = :evidencia.id AND o.usuario = :usuario.id")
+			+ " JOIN Instancia i ON e.instancia = i.id "
+			+ " JOIN Organizacion o ON i.organizacion = o.id "
+			+ " WHERE e = :evidencia AND o.usuario = :usuario")
 	Evidencia findByUsuario(
 			@Param("evidencia") Evidencia evidencia, 
 			@Param("usuario") Usuario usuario

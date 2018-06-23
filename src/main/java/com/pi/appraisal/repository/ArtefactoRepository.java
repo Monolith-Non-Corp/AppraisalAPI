@@ -15,10 +15,10 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
 	void delete(Artefacto artefacto);
 	
 	@Query("SELECT a FROM Artefacto a"
-			+ "JOIN Evidencia e ON a.evidencia = e.id"
-			+ "JOIN Instancia i ON e.instancia = i.id"
-			+ "JOIN Organizacion o ON i.organizacion = o.id"
-			+ "WHERE e.id = :evidencia.id AND o.usuario = :usuario.id AND a.id = :id AND a.nombre = :nombre")
+			+ " JOIN Evidencia e ON a.evidencia = e.id"
+			+ " JOIN Instancia i ON e.instancia = i.id"
+			+ " JOIN Organizacion o ON i.organizacion = o.id"
+			+ " WHERE e = :evidencia AND o.usuario = :usuario AND a.id = :id AND a.nombre = :nombre")
 	Artefacto findByUsuario(
 			@Param("id") Integer id, 
 			@Param("nombre") String nombre, 
@@ -27,20 +27,20 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
 	);
 	
 	@Query("SELECT a FROM Artefacto a"
-			+ "JOIN Evidencia e ON a.evidencia = e.id"
-			+ "JOIN Instancia i ON e.instancia = i.id"
-			+ "JOIN Organizacion o ON i.organizacion = o.id"
-			+ "WHERE a.id = :artefacto.id AND o.usuario = :usuario.id")
+			+ " JOIN Evidencia e ON a.evidencia = e.id"
+			+ " JOIN Instancia i ON e.instancia = i.id"
+			+ " JOIN Organizacion o ON i.organizacion = o.id"
+			+ " WHERE a = :artefacto AND o.usuario = :usuario")
 	Artefacto findByUsuario(
 			@Param("artefacto") Artefacto artefacto, 
 			@Param("usuario") Usuario usuario
 	);
 	
 	@Query("SELECT * FROM Artefacto a "
-			+ "JOIN Evidencia e ON a.evidencia = e.id "
-			+ "JOIN Instancia i ON e.instancia = i.id "
-			+ "JOIN Organizacion o ON i.organizacion = o.id "
-			+ "WHERE e.id = :evidencia.id AND o.usuario = :usuario.id")
+			+ " JOIN Evidencia e ON a.evidencia = e.id "
+			+ " JOIN Instancia i ON e.instancia = i.id "
+			+ " JOIN Organizacion o ON i.organizacion = o.id "
+			+ " WHERE e = :evidencia AND o.usuario = :usuario")
 	List<Artefacto> findAllByUsuario(
 			@Param("evidencia") Evidencia evidencia, 
 			@Param("usuario") Usuario usuario

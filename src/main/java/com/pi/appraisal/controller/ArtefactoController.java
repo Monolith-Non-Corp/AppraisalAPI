@@ -30,12 +30,16 @@ import com.pi.appraisal.util.Credentials;
 @RequestMapping("api/file")
 public class ArtefactoController {
 
+	private final ArtefactoRepository artefactoRepository;
+	private final EvidenciaRepository evidenciaRepository;
+	private final SessionCache session;
+
 	@Autowired
-	private ArtefactoRepository artefactoRepository;
-	@Autowired
-	private EvidenciaRepository evidenciaRepository;
-	@Autowired
-	private SessionCache session;
+	public ArtefactoController(ArtefactoRepository artefactoRepository, EvidenciaRepository evidenciaRepository, SessionCache session) {
+		this.artefactoRepository = artefactoRepository;
+		this.evidenciaRepository = evidenciaRepository;
+		this.session = session;
+	}
 
 	@PostMapping
 	public ResponseEntity<Artefacto> upload(@RequestBody Evidencia in, @RequestParam("file") MultipartFile file,
@@ -89,7 +93,7 @@ public class ArtefactoController {
 			@RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
 				.map(usuario -> artefactoRepository.findAllByUsuario(in, usuario))
-				.map(list -> ResponseEntity.ok(list))
+				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 }

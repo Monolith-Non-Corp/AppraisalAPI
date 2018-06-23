@@ -14,7 +14,7 @@ import com.pi.appraisal.entity.MetaEspecifica;
 import com.pi.appraisal.entity.Nivel;
 import com.pi.appraisal.entity.PracticaEspecifica;
 import com.pi.appraisal.repository.AreaProcesoRepository;
-import com.pi.appraisal.repository.MetaEspecificaResporitory;
+import com.pi.appraisal.repository.MetaEspecificaRepository;
 import com.pi.appraisal.repository.NivelRepository;
 import com.pi.appraisal.repository.PracticaEspecificaRepository;
 
@@ -22,18 +22,22 @@ import com.pi.appraisal.repository.PracticaEspecificaRepository;
 @RequestMapping("api/cmmi")
 public class CMMIController {
 	
+	private final NivelRepository nivelRepository;
+	private final AreaProcesoRepository areaProcesoRepository;
+	private final MetaEspecificaRepository metaEspecificaRepository;
+	private final PracticaEspecificaRepository practicaEspecificaRepository;
+
 	@Autowired
-	private NivelRepository nivelRepository;
-	@Autowired
-	private AreaProcesoRepository areaProcesoRepository;
-	@Autowired
-	private MetaEspecificaResporitory metaEspecificarResporitory;
-	@Autowired
-	private PracticaEspecificaRepository practicaEspecificaRepository;
+	public CMMIController(NivelRepository nivelRepository, AreaProcesoRepository areaProcesoRepository, MetaEspecificaRepository metaEspecificaRepository, PracticaEspecificaRepository practicaEspecificaRepository) {
+		this.nivelRepository = nivelRepository;
+		this.areaProcesoRepository = areaProcesoRepository;
+		this.metaEspecificaRepository = metaEspecificaRepository;
+		this.practicaEspecificaRepository = practicaEspecificaRepository;
+	}
 
 	@GetMapping("nivel")
 	public ResponseEntity<Nivel.NivelImpl> getNivelByLvl(@RequestBody() Integer lvl) {
-		return nivelRepository.findByLvl(lvl).map(nivel -> ResponseEntity.ok(nivel)).orElse(ResponseEntity.notFound().build());
+		return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 	
 	@GetMapping("area")
@@ -43,7 +47,7 @@ public class CMMIController {
 	
 	@GetMapping("meta")
 	public ResponseEntity<List<MetaEspecifica.MetaEspecificaImpl>> getMetaEspecificaByAreaProceso(@RequestBody() AreaProceso area) {
-		return ResponseEntity.ok(metaEspecificarResporitory.findAllByAreaProceso(area));
+		return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(area));
 	}
 	
 	@GetMapping("practica")

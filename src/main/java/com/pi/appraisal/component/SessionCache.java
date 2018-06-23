@@ -65,9 +65,8 @@ public class SessionCache {
 	}
 
 	private void flush() {
-		Iterator<UUID> it = cacheMap.keySet().iterator();
-		while (it.hasNext()) {
-			cacheMap.compute(it.next(), SessionCache.FUNC);
+		for (UUID uuid : cacheMap.keySet()) {
+			cacheMap.compute(uuid, SessionCache.FUNC);
 		}
 	}
 
@@ -81,6 +80,8 @@ public class SessionCache {
 
 		Session(UUID key, UUID token, Integer userId, Date expires, Priviledge priviledge) {
 			this.key = key;
+			this.token = token;
+			this.userId = userId;
 			this.expires = expires;
 			this.priviledge = priviledge;
 		}
