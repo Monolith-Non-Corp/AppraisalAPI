@@ -1,18 +1,11 @@
 package com.pi.appraisal.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Nivel", schema = "dbo", catalog = "Appraisal")
@@ -26,7 +19,8 @@ public class Nivel {
 	@JsonIgnore
 	private Set<Organizacion> organizacions = new HashSet<>(0);
 
-	public Nivel() {}
+	public Nivel() {
+	}
 
 	public Nivel(int lvl, String descripcion) {
 		this.lvl = lvl;
@@ -80,6 +74,7 @@ public class Nivel {
 
 	public interface NivelImpl {
 		String getDescripcion();
+
 		int getLvl();
 	}
 }

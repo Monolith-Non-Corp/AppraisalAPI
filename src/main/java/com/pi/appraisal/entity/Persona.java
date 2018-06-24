@@ -1,18 +1,11 @@
 package com.pi.appraisal.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Persona", schema = "dbo", catalog = "Appraisal")
@@ -25,7 +18,8 @@ public class Persona {
 	private String segundoApellido;
 	private Set<Usuario> usuarios = new HashSet<>(0);
 
-	public Persona() {}
+	public Persona() {
+	}
 
 	public Persona(int id, String nombre) {
 		this.id = id;

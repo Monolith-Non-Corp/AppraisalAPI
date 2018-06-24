@@ -1,10 +1,9 @@
 package com.pi.appraisal.repository;
 
-import java.util.Optional;
-
+import com.pi.appraisal.entity.Nivel;
 import org.springframework.data.repository.Repository;
 
-import com.pi.appraisal.entity.Nivel;
+import java.util.Optional;
 
 public interface NivelRepository extends Repository<Nivel, Integer> {
 	Optional<Nivel.NivelImpl> findByLvl(int lvl);

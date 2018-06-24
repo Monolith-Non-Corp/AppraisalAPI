@@ -1,17 +1,10 @@
 package com.pi.appraisal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "Categoria", schema = "dbo", catalog = "Appraisal")
@@ -66,6 +59,7 @@ public class Categoria {
 
 	public interface CategoriaImpl {
 		String getNombre();
+
 		int getId();
 	}
 }

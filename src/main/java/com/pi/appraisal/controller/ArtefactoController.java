@@ -1,30 +1,22 @@
 package com.pi.appraisal.controller;
 
-import java.io.IOException;
-import java.util.List;
-
+import com.pi.appraisal.component.SessionCache;
+import com.pi.appraisal.entity.Artefacto;
+import com.pi.appraisal.entity.Evidencia;
+import com.pi.appraisal.repository.ArtefactoRepository;
+import com.pi.appraisal.repository.EvidenciaRepository;
+import com.pi.appraisal.util.Credentials;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.pi.appraisal.component.SessionCache;
-import com.pi.appraisal.entity.Artefacto;
-import com.pi.appraisal.entity.Evidencia;
-import static com.pi.appraisal.entity.UsuarioRol.Priviledge.*;
-import com.pi.appraisal.repository.ArtefactoRepository;
-import com.pi.appraisal.repository.EvidenciaRepository;
-import com.pi.appraisal.util.Credentials;
+import java.io.IOException;
+import java.util.List;
+
+import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ORGANIZACION;
 
 @RestController
 @RequestMapping("api/file")
@@ -43,7 +35,7 @@ public class ArtefactoController {
 
 	@PostMapping
 	public ResponseEntity<Artefacto> upload(@RequestBody Evidencia in, @RequestParam("file") MultipartFile file,
-			@RequestHeader("credentials") Credentials credentials) {
+											@RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
 				.map(usuario -> evidenciaRepository.findByUsuario(in, usuario)).map(evidencia -> {
 					if (file.isEmpty()) {
@@ -66,8 +58,8 @@ public class ArtefactoController {
 	}
 
 	@DeleteMapping
-	public ResponseEntity<String> delete(@RequestBody Artefacto in, 
-			@RequestHeader("credentials") Credentials credentials) {
+	public ResponseEntity<String> delete(@RequestBody Artefacto in,
+										 @RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
 				.map(usuario -> artefactoRepository.findByUsuario(in, usuario))
 				.map(artefacto -> {
@@ -79,7 +71,7 @@ public class ArtefactoController {
 
 	@GetMapping("{id}/{name}")
 	public ResponseEntity<byte[]> getFile(@PathVariable("id") Integer id, @PathVariable("name") String name,
-			@RequestBody() Evidencia in, @RequestHeader("credentials") Credentials credentials) {
+										  @RequestBody() Evidencia in, @RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
 				.map(usuario -> artefactoRepository.findByUsuario(id, name, in, usuario))
 				.map(artefacto -> ResponseEntity.ok()
@@ -87,10 +79,10 @@ public class ArtefactoController {
 						.body(artefacto.getArchivo()))
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
-	
+
 	@GetMapping
-	public ResponseEntity<List<Artefacto>> getAll(@RequestBody() Evidencia in, 
-			@RequestHeader("credentials") Credentials credentials) {
+	public ResponseEntity<List<Artefacto>> getAll(@RequestBody() Evidencia in,
+												  @RequestHeader("credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
 				.map(usuario -> artefactoRepository.findAllByUsuario(in, usuario))
 				.map(ResponseEntity::ok)

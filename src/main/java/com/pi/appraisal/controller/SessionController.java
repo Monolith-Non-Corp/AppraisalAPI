@@ -1,8 +1,8 @@
 package com.pi.appraisal.controller;
 
-import java.util.Base64;
-import java.util.regex.Pattern;
-
+import com.pi.appraisal.component.SessionCache;
+import com.pi.appraisal.entity.Usuario;
+import com.pi.appraisal.repository.UsuarioRepository;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pi.appraisal.component.SessionCache;
-import com.pi.appraisal.entity.Usuario;
-import com.pi.appraisal.repository.UsuarioRepository;
+import java.util.Base64;
+import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("api/session")

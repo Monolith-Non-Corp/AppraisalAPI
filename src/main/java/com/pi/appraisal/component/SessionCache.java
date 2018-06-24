@@ -1,21 +1,15 @@
 package com.pi.appraisal.component;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.BiFunction;
-
-import org.springframework.stereotype.Component;
-
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.UsuarioRol.Priviledge;
 import com.pi.appraisal.util.Credentials;
 import com.pi.appraisal.util.Option;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.function.BiFunction;
 
 @Component("session")
 public class SessionCache {
@@ -37,7 +31,7 @@ public class SessionCache {
 
 	public Usuario init(Usuario usuario) {
 		this.flush();
-		Session session  = Session.of(usuario);
+		Session session = Session.of(usuario);
 		this.cacheMap.put(session.token, session);
 		return usuario;
 	}

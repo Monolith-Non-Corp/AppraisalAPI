@@ -1,22 +1,15 @@
 package com.pi.appraisal.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "Usuario_Rol", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UsuarioRol {
 
 	private int id;
@@ -72,12 +65,12 @@ public class UsuarioRol {
 
 		public static Priviledge from(UsuarioRol rol) {
 			switch (rol.id) {
-			case 1:
-				return ORGANIZACION;
-			case 2:
-				return ADMINISTRADOR;
-			default:
-				return ANY;
+				case 1:
+					return ORGANIZACION;
+				case 2:
+					return ADMINISTRADOR;
+				default:
+					return ANY;
 			}
 		}
 	}

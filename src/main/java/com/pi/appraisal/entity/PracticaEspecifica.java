@@ -1,20 +1,11 @@
 package com.pi.appraisal.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Practica_Especifica", schema = "dbo", catalog = "Appraisal")
@@ -29,7 +20,8 @@ public class PracticaEspecifica {
 	@JsonIgnore
 	private Set<Evidencia> evidencias = new HashSet<>(0);
 
-	public PracticaEspecifica() {}
+	public PracticaEspecifica() {
+	}
 
 	public PracticaEspecifica(int id, MetaEspecifica metaEspecifica, String nombre, String descripcion) {
 		this.id = id;
@@ -96,7 +88,9 @@ public class PracticaEspecifica {
 
 	public interface PracticaEspecificaImpl {
 		String getDescripcion();
+
 		String getNombre();
+
 		int getId();
 	}
 }

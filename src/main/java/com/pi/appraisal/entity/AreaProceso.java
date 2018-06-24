@@ -1,20 +1,11 @@
 package com.pi.appraisal.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "Area_Proceso", schema = "dbo", catalog = "Appraisal")
@@ -30,7 +21,8 @@ public class AreaProceso {
 	@JsonIgnore
 	private Set<MetaEspecifica> metaEspecificas = new HashSet<>(0);
 
-	public AreaProceso() {}
+	public AreaProceso() {
+	}
 
 	public AreaProceso(int id, Nivel nivel, Categoria categoria, String nombre, String descripcion) {
 		this.id = id;
@@ -109,8 +101,11 @@ public class AreaProceso {
 
 	public interface AreaProcesoImpl {
 		Categoria.CategoriaImpl getCategoria();
+
 		String getDescripcion();
+
 		String getNombre();
+
 		int getId();
 	}
 }
