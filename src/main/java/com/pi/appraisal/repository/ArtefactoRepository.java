@@ -36,7 +36,7 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
 			@Param("usuario") Usuario usuario
 	);
 
-	@Query("SELECT * FROM Artefacto a "
+	@Query("SELECT a FROM Artefacto a "
 			+ " JOIN Evidencia e ON a.evidencia = e.id "
 			+ " JOIN Instancia i ON e.instancia = i.id "
 			+ " JOIN Organizacion o ON i.organizacion = o.id "
