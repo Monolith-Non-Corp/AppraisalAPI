@@ -2,7 +2,9 @@ package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Usuario;
+import com.pi.appraisal.entity.UsuarioRol;
 import com.pi.appraisal.repository.UsuarioRepository;
+import com.pi.appraisal.util.Credentials;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +40,12 @@ public class SessionController {
 					.map(usuario -> ResponseEntity.ok(session.init(usuario)))
 					.orElse(ResponseEntity.notFound().build());
 		} else return ResponseEntity.notFound().build();
+	}
+
+	@GetMapping("validate")
+	public ResponseEntity<Boolean> validate(@RequestHeader("credentials") Credentials credentials) {
+		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
+				.map(usuario -> ResponseEntity.ok(usuarioRepository.exists(usuario)))
+				.orElse(ResponseEntity.notFound().build());
 	}
 }

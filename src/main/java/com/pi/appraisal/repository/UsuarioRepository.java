@@ -11,4 +11,6 @@ public interface UsuarioRepository extends Repository<Usuario, Integer> {
 	void delete(Usuario usuario);
 
 	Optional<Usuario> findByUsernameAndPassword(String username, String password);
+
+	boolean exists(Usuario usuario);
 }
