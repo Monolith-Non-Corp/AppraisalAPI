@@ -16,7 +16,6 @@ public class Credentials {
 	}
 
 	public Credentials(UUID token, Long timestamp, String hash) {
-		super();
 		this.token = token;
 		this.timestamp = timestamp;
 		this.hash = hash;
