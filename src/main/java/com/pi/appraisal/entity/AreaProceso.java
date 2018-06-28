@@ -24,6 +24,10 @@ public class AreaProceso {
 	public AreaProceso() {
 	}
 
+	public AreaProceso(int id) {
+		this.id = id;
+	}
+
 	public AreaProceso(int id, Nivel nivel, Categoria categoria, String nombre, String descripcion) {
 		this.id = id;
 		this.nivel = nivel;

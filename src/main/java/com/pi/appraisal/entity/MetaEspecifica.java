@@ -23,6 +23,10 @@ public class MetaEspecifica {
 	public MetaEspecifica() {
 	}
 
+	public MetaEspecifica(int id) {
+		this.id = id;
+	}
+
 	public MetaEspecifica(int id, AreaProceso areaProceso, String nombre, String descripcion) {
 		this.id = id;
 		this.areaProceso = areaProceso;

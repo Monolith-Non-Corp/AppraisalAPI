@@ -22,6 +22,10 @@ public class Nivel {
 	public Nivel() {
 	}
 
+	public Nivel(int lvl) {
+		this.lvl = lvl;
+	}
+
 	public Nivel(int lvl, String descripcion) {
 		this.lvl = lvl;
 		this.descripcion = descripcion;
