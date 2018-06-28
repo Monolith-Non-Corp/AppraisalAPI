@@ -32,7 +32,7 @@ public class SessionController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Usuario> getUser(@RequestHeader("credentials") String credentials) {
+	public ResponseEntity<Usuario> getUser(@RequestHeader("Credentials") String credentials) {
 		credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));
 		if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {
 			String[] data = credentials.split(":", 2);
@@ -43,7 +43,7 @@ public class SessionController {
 	}
 
 	@GetMapping("validate")
-	public ResponseEntity<Boolean> validate(@RequestHeader("credentials") Credentials credentials) {
+	public ResponseEntity<Boolean> validate(@RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
 				.map(usuario -> ResponseEntity.ok(usuarioRepository.exists(usuario)))
 				.orElse(ResponseEntity.notFound().build());

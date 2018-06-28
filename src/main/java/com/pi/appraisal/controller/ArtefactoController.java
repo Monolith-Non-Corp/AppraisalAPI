@@ -2,7 +2,6 @@ package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Artefacto;
-import com.pi.appraisal.entity.Evidencia;
 import com.pi.appraisal.repository.ArtefactoRepository;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.util.Credentials;
@@ -33,11 +32,12 @@ public class ArtefactoController {
 		this.session = session;
 	}
 
-	@PostMapping
-	public ResponseEntity<Artefacto> upload(@RequestBody Evidencia in, @RequestParam("file") MultipartFile file,
-											@RequestHeader("credentials") Credentials credentials) {
+	@PostMapping("{evidencia}")
+	public ResponseEntity<Artefacto> upload(@PathVariable("evidencia") Integer evidenciaIn,
+											@RequestParam("file") MultipartFile file,
+											@RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> evidenciaRepository.findByUsuario(in, usuario)).map(evidencia -> {
+				.map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario)).map(evidencia -> {
 					if (file.isEmpty()) {
 						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();
 					}
@@ -57,34 +57,33 @@ public class ArtefactoController {
 				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
-	@DeleteMapping
-	public ResponseEntity<String> delete(@RequestBody Artefacto in,
-										 @RequestHeader("credentials") Credentials credentials) {
+	@DeleteMapping("{artefacto}")
+	public ResponseEntity<String> delete(@PathVariable("artefacto") Integer artefactoIn,
+										 @RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findByUsuario(in, usuario))
+				.map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))
 				.map(artefacto -> {
 					artefactoRepository.delete(artefacto);
 					return ResponseEntity.ok("File was deleted successfully");
-				})
-				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
-	@GetMapping("{id}/{name}")
-	public ResponseEntity<byte[]> getFile(@PathVariable("id") Integer id, @PathVariable("name") String name,
-										  @RequestBody() Evidencia in, @RequestHeader("credentials") Credentials credentials) {
+	@GetMapping("{evidencia}/{artefacto}")
+	public ResponseEntity<byte[]> getFile(@PathVariable("evidencia") Integer evidenciaIn,
+										  @PathVariable("artefacto") Integer artefactoIn,
+										  @RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findByUsuario(id, name, in, usuario))
-				.map(artefacto -> ResponseEntity.ok()
-						.contentType(MediaType.APPLICATION_OCTET_STREAM)
-						.body(artefacto.getArchivo()))
-				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+				.map(usuario -> artefactoRepository.findByUsuario(evidenciaIn, artefactoIn, usuario))
+				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+						.body(artefacto.getArchivo())
+				).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
 
-	@GetMapping
-	public ResponseEntity<List<Artefacto>> getAll(@RequestBody() Evidencia in,
-												  @RequestHeader("credentials") Credentials credentials) {
+	@GetMapping("{evidencia}")
+	public ResponseEntity<List<Artefacto>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
+												  @RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findAllByUsuario(in, usuario))
+				.map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario))
 				.map(ResponseEntity::ok)
 				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
