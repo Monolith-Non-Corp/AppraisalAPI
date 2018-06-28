@@ -11,7 +11,7 @@ import com.pi.appraisal.repository.PracticaEspecificaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,23 +34,23 @@ public class CMMIController {
 		this.practicaEspecificaRepository = practicaEspecificaRepository;
 	}
 
-	@GetMapping("nivel")
-	public ResponseEntity<Nivel.NivelImpl> getNivelByLvl(@RequestBody() Integer lvl) {
+	@GetMapping("nivel/{lvl}")
+	public ResponseEntity<Nivel.NivelImpl> getNivelByLvl(@PathVariable("lvl") Integer lvl) {
 		return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
-	@GetMapping("area")
-	public ResponseEntity<List<AreaProceso.AreaProcesoImpl>> getAreaProcesoByNivel(@RequestBody() Nivel nivel) {
-		return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(nivel));
+	@GetMapping("area/{nivel}")
+	public ResponseEntity<List<AreaProceso.AreaProcesoImpl>> getAreaProcesoByNivel(@PathVariable("nivel") Integer nivel) {
+		return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)));
 	}
 
-	@GetMapping("meta")
-	public ResponseEntity<List<MetaEspecifica.MetaEspecificaImpl>> getMetaEspecificaByAreaProceso(@RequestBody() AreaProceso area) {
-		return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(area));
+	@GetMapping("meta/{area}")
+	public ResponseEntity<List<MetaEspecifica.MetaEspecificaImpl>> getMetaEspecificaByAreaProceso(@PathVariable("area") Integer area) {
+		return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)));
 	}
 
-	@GetMapping("practica")
-	public ResponseEntity<List<PracticaEspecifica.PracticaEspecificaImpl>> getPracticaEspecificaByMetaEspecifica(@RequestBody() MetaEspecifica meta) {
-		return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(meta));
+	@GetMapping("practica/{meta}")
+	public ResponseEntity<List<PracticaEspecifica.PracticaEspecificaImpl>> getPracticaEspecificaByMetaEspecifica(@PathVariable("meta") Integer meta) {
+		return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)));
 	}
 }
