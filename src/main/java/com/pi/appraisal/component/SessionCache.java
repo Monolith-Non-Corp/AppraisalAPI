@@ -38,7 +38,7 @@ public class SessionCache {
 
 	public Option<Usuario> authenticate(Credentials credentials, Priviledge priviledge) {
 		if (credentials.isExpired()) return Option.empty();
-		return getSession(credentials.getToken()).filter(session -> session.priviledge == priviledge).map(session -> {
+		return getSession(credentials.getToken()).filter(session -> session.priviledge == priviledge || priviledge == Priviledge.ANY).map(session -> {
 			String testHash = String.format("{%s}:{%d}", session.key.toString(), credentials.getTimestamp());
 			boolean match = false;
 			try {
