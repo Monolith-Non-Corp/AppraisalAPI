@@ -33,48 +33,74 @@ public class EvidenciaController {
 		this.session = session;
 	}
 
+	/**
+	 * Crea todas las {@link com.pi.appraisal.entity.Evidencia} de una instancia especificada
+	 * en {@param instanciaIn} en el area especificada en {@param areaIn}
+	 *
+	 * @param instanciaIn El ID de una {@link com.pi.appraisal.entity.Instancia}
+	 * @param areaIn      El ID de una {@link com.pi.appraisal.entity.AreaProceso}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return La lista de {@link com.pi.appraisal.entity.Evidencia} creadas si es aplicable
+	 */
 	@PostMapping("{instancia}/{area}")
 	public ResponseEntity<List<Evidencia>> create(@PathVariable("instancia") Integer instanciaIn,
 												  @PathVariable("area") Integer areaIn,
 												  @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))
-				.map(instancia -> areaProcesoRepository.findById(areaIn)
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar la instancia con el usuario
+				.map(instancia -> areaProcesoRepository.findById(areaIn)                                                //Si existe, buscar la area especificada
 						.map(area -> {
-							List<Evidencia> evidencias = new ArrayList<>();
-							area.getMetaEspecificas().forEach(meta -> {
-								meta.getPracticaEspecificas().forEach(practica -> {
-									Evidencia evidencia = new Evidencia();
-									evidencia.setInstancia(instancia);
-									evidencia.setPracticaEspecifica(practica);
-									evidencias.add(evidenciaRepository.save(evidencia));
+							List<Evidencia> evidencias = new ArrayList<>();                                             //Crear lista de evidencias
+							area.getMetaEspecificas().forEach(meta -> {                                                 //Buscar metas de la area especificada
+								meta.getPracticaEspecificas().forEach(practica -> {                                     //Buscar practicas de la meta
+									Evidencia evidencia = new Evidencia();                                              //Crear evidencia
+									evidencia.setInstancia(instancia);                                                  //Asignar instancia
+									evidencia.setPracticaEspecifica(practica);                                          //Asignar practica
+									evidencias.add(evidenciaRepository.save(evidencia));                                //Añadir evidencia a la lista
 								});
 							});
-							return ResponseEntity.ok(evidencias);
-						}).orElse(ResponseEntity.notFound().build())
-				).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+							return ResponseEntity.ok(evidencias);                                                       //Enviar evidencias
+						}).orElse(ResponseEntity.notFound().build())                                                    //Si no existe, enviar error
+				).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                          //Si no es valido, enviar error
 	}
 
+	/**
+	 * Elimina todas las {@link com.pi.appraisal.entity.Evidencia} de la instancia especificada en {@param instanciaIn}
+	 *
+	 * @param instanciaIn El ID de una {@link com.pi.appraisal.entity.Instancia}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return El mensaje de elminado si es aplicable
+	 */
 	@DeleteMapping("{instancia}")
 	public ResponseEntity<String> delete(@PathVariable("instancia") Integer instanciaIn,
 										 @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
 				.map(instancia -> {
-					instancia.getEvidencias().forEach(evidenciaRepository::delete);
-					return ResponseEntity.ok("Evidences deleted successfully");
-				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+					instancia.getEvidencias().forEach(evidenciaRepository::delete);                                     //Eliminar cada evidencia de la instancia
+					return ResponseEntity.ok("Evidences deleted successfully");                                         //Enviar mensaje
+				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
 	}
 
+	/**
+	 * Retorna la lista de {@link com.pi.appraisal.entity.Evidencia} de la instancia especificada
+	 * en {@param instanciaIn} en su area especificada en {@param areaIn}
+	 *
+	 * @param instanciaIn El ID de una {@link com.pi.appraisal.entity.Instancia}
+	 * @param areaIn      El ID de una {@link com.pi.appraisal.entity.AreaProceso}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return La lista de {@link com.pi.appraisal.entity.Evidencia} si es aplicable
+	 */
 	@GetMapping("{instancia}/{area}")
 	public ResponseEntity<List<Evidencia>> get(@PathVariable("instancia") Integer instanciaIn,
 											   @PathVariable("area") Integer areaIn,
 											   @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))
-				.map(instancia -> areaProcesoRepository.findById(areaIn)
-						.map(area -> ResponseEntity.ok(evidenciaRepository.findAllByArea(area, instancia)))
-						.orElse(ResponseEntity.notFound().build())
-				).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
+				.map(instancia -> areaProcesoRepository.findById(areaIn)                                                //Si existe, buscar la area especificada
+						.map(area -> evidenciaRepository.findAllByArea(area, instancia))                                //Buscar evidencias por area e instancia y enviar
+						.map(ResponseEntity::ok)                                                                        //Enviar evidencias
+						.orElse(ResponseEntity.notFound().build())                                                      //Si no existe, enviar error
+				).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                          //Si no es valido, enviar error
 	}
 }

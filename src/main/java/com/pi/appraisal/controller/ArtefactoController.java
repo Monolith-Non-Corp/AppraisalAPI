@@ -32,59 +32,90 @@ public class ArtefactoController {
 		this.session = session;
 	}
 
+	/**
+	 * Recibe un {@param file} y lo almacena en la evidencia especificada en el {@param evidenciaIn}
+	 *
+	 * @param evidenciaIn El ID de una {@link com.pi.appraisal.entity.Evidencia}
+	 * @param file        Un archivo de cualquier tipo en forma {@link MultipartFile}
+	 * @param credentials Las {@link com.pi.appraisal.util.Credentials} de la sesion
+	 * @return El {@link com.pi.appraisal.entity.AreaProceso} creado si es aplicable
+	 */
 	@PostMapping("{evidencia}")
 	public ResponseEntity<Artefacto> upload(@PathVariable("evidencia") Integer evidenciaIn,
 											@RequestParam("file") MultipartFile file,
 											@RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario)).map(evidencia -> {
-					if (file.isEmpty()) {
-						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario))                                //Si es valido, buscar la evidencia con el usuario
+				.map(evidencia -> {
+					if (file.isEmpty()) {                                                                               //Si el archivo esta vacio
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();                      //Enviar error
 					}
 					byte[] bytes;
 					try {
 						bytes = file.getBytes();
-					} catch (IOException e) {
-						e.printStackTrace();
-						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();
+					} catch (IOException e) {                                                                           //Si existe un error al leer el archivo
+						e.printStackTrace();                                                                            //Imprimir error en consola
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();                      //Enviar error
 					}
-					Artefacto artefacto = new Artefacto();
+					Artefacto artefacto = new Artefacto();                                                              //Crear artefacto
 					artefacto.setArchivo(bytes);
 					artefacto.setNombre(file.getOriginalFilename());
 					artefacto.setTipo(file.getContentType());
 					artefacto.setEvidencia(evidencia);
-					return ResponseEntity.ok(artefactoRepository.save(artefacto));
-				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+					return ResponseEntity.ok(artefactoRepository.save(artefacto));                                      //Guardar artefacto
+				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
 	}
 
+	/**
+	 * Elimina el artefacto especificado en {@param artefactoIn}
+	 *
+	 * @param artefactoIn El ID de un {@link com.pi.appraisal.entity.Artefacto}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return El {@link com.pi.appraisal.entity.Artefacto} elminado si es aplicable
+	 */
 	@DeleteMapping("{artefacto}")
-	public ResponseEntity<String> delete(@PathVariable("artefacto") Integer artefactoIn,
+	public ResponseEntity<Artefacto> delete(@PathVariable("artefacto") Integer artefactoIn,
 										 @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))                                //Si es valido, buscar el artefacto con el usuario
 				.map(artefacto -> {
-					artefactoRepository.delete(artefacto);
-					return ResponseEntity.ok("File was deleted successfully");
-				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+					artefactoRepository.delete(artefacto);                                                              //Eliminar aretfacto
+					return ResponseEntity.ok(artefacto);                                                                //Enviar artefacto eliminado
+				}).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
 	}
 
+	/**
+	 * Descarga el artefacto especificado en {@param artefactoIn} de la evidencia especificada en {@param evidenciaIn}
+	 *
+	 * @param evidenciaIn El ID de una {@link com.pi.appraisal.entity.Evidencia}
+	 * @param artefactoIn El ID de un {@link com.pi.appraisal.entity.Artefacto}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return Los bytes del archivo si es aplicable
+	 */
 	@GetMapping("{evidencia}/{artefacto}")
 	public ResponseEntity<byte[]> getFile(@PathVariable("evidencia") Integer evidenciaIn,
 										  @PathVariable("artefacto") Integer artefactoIn,
 										  @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findByUsuario(evidenciaIn, artefactoIn, usuario))
-				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
-						.body(artefacto.getArchivo())
-				).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> artefactoRepository.findByUsuario(evidenciaIn, artefactoIn, usuario))                   //Si es valido, buscar artefacto con el usuario y la evidencia
+				.map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)                   //Especificar tipo de contenido
+						.body(artefacto.getArchivo())                                                                   //Enviar archivo
+				).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                       //Si no es valido, enviar error
 	}
 
+	/**
+	 * Retorna la lista de {@link Artefacto} de la evidencia especificada en {@param evidenciaIn}
+	 *
+	 * @param evidenciaIn El ID de una {@link com.pi.appraisal.entity.Evidencia}
+	 * @param credentials Las {@link Credentials} de la sesion
+	 * @return La lista de {@link com.pi.appraisal.entity.Artefacto} si es aplicable
+	 */
 	@GetMapping("{evidencia}")
 	public ResponseEntity<List<Artefacto>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
 												  @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario))
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario))                             //Si es valido, buscar artefactos con el usuario y la evidencia
+				.map(ResponseEntity::ok)                                                                                //Enviar artefactos
+				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                        //Si no es valido, enviar error
 	}
 }

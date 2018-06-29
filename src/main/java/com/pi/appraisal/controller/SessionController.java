@@ -20,8 +20,11 @@ import java.util.regex.Pattern;
 @RequestMapping("api/session")
 public class SessionController {
 
+	/**
+	 * Regex para la forma '(email)(:)(password)'
+	 * <a href="http://emailregex.com/">Referencia</a>
+	 */
 	private static final String CREDENTIALS_MATCHER = "((?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21\\x23-\\x5b\\x5d-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c\\x0e-\\x7f])+)]))(:)([a-zA-Z!@#$%^&*:0-9]+)";
-
 	private final UsuarioRepository usuarioRepository;
 	private final SessionCache session;
 
@@ -31,21 +34,34 @@ public class SessionController {
 		this.session = session;
 	}
 
+	/**
+	 * Inicializa la sesion del {@link Usuario} con su email y password.
+	 * Asigna un token publico y privado el cual expira en 6 horas.
+	 *
+	 * @param credentials String codificado en base64 con la forma '(email)(:)(password)'
+	 * @return {@link ResponseEntity} con el body del {@link Usuario} si es aplicable
+	 */
 	@GetMapping
 	public ResponseEntity<Usuario> getUser(@RequestHeader("Credentials") String credentials) {
-		credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));
-		if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {
-			String[] data = credentials.split(":", 2);
-			return usuarioRepository.findByUsernameAndPassword(data[0], data[1])
-					.map(usuario -> ResponseEntity.ok(session.init(usuario)))
-					.orElse(ResponseEntity.notFound().build());
-		} else return ResponseEntity.notFound().build();
+		credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));                               //Convierte a String UTF-8 un base64 con el email y password
+		if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {                                                        //Verifica que el String tenga la forma '(email)(:)(password)'
+			String[] data = credentials.split(":", 2);                                                      //Separa el email y password
+			return usuarioRepository.findByUsernameAndPassword(data[0], data[1])                                        //Busca el usuario con el email y password
+					.map(usuario -> ResponseEntity.ok(session.init(usuario)))                                           //Si existe, inicializa el usuario con un token publico y privado
+					.orElse(ResponseEntity.notFound().build());                                                         //Si no existe, envia un error
+		} else return ResponseEntity.notFound().build();                                                                //Si el String no es correcto, enviar error
 	}
 
+	/**
+	 * Valida que las {@link Credentials} esten activas en el servidor
+	 *
+	 * @param credentials Objeto JSON {@link Credentials}
+	 * @return {@link ResponseEntity} con el body {@link Boolean} si es aplicable
+	 */
 	@GetMapping("validate")
 	public ResponseEntity<Boolean> validate(@RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
-				.map(usuario -> ResponseEntity.ok(usuarioRepository.exists(usuario)))
-				.orElse(ResponseEntity.notFound().build());
+		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
+				.map(usuario -> ResponseEntity.ok(usuarioRepository.exists(usuario)))                                   //Si es valido, envia si el usuario existe
+				.orElse(ResponseEntity.notFound().build());                                                             //Si no es valido, enviar error
 	}
 }

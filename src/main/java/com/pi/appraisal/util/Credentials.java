@@ -6,11 +6,14 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Credenciales del {@link com.pi.appraisal.entity.Usuario} incluido en el Header del Http request
+ */
 public class Credentials {
 
-	private UUID token;
-	private String hash;
-	private Long timestamp;
+	private UUID token;                                                                                                 //Token publico
+	private String hash;                                                                                                //Hash del token privado + timestamp
+	private Long timestamp;                                                                                             //Tiempo UTF del Http request al enviarse
 
 	public Credentials() {
 	}
