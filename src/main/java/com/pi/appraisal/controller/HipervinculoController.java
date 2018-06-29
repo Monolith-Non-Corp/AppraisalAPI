@@ -57,10 +57,10 @@ public class HipervinculoController {
 	@GetMapping("{hipervinculo}")
 	public ResponseEntity<List<Hipervinculo>> getAll(@PathVariable("hypervinculo") Integer hipervinculoIn,
 													 @RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, ORGANIZACION)
-				.map(usuario -> hipervinculoRepository.findAllByUsuario(hipervinculoIn, usuario))
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+		return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
+				.map(usuario -> hipervinculoRepository.findAllByUsuario(evidenciaIn, usuario))                          //Si es valido, buscar hypervinculos con el usuario y la evidencia
+				.map(ResponseEntity::ok)                                                                                //Enviar hypervinculos
+				.orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                           //Si no es valido, enviar error
 	}
 
 }
