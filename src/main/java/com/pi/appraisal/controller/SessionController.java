@@ -7,6 +7,7 @@ import com.pi.appraisal.repository.UsuarioRepository;
 import com.pi.appraisal.util.Credentials;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -42,7 +43,7 @@ public class SessionController {
 	 * @return {@link ResponseEntity} con el body del {@link Usuario} si es aplicable
 	 */
 	@GetMapping
-	public ResponseEntity<Usuario> getUser(@RequestHeader("Credentials") String credentials) {
+	public ResponseEntity<Usuario> login(@RequestHeader("Credentials") String credentials) {
 		credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));                               //Convierte a String UTF-8 un base64 con el email y password
 		if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {                                                        //Verifica que el String tenga la forma '(email)(:)(password)'
 			String[] data = credentials.split(":", 2);                                                      //Separa el email y password
@@ -50,6 +51,21 @@ public class SessionController {
 					.map(usuario -> ResponseEntity.ok(session.init(usuario)))                                           //Si existe, inicializa el usuario con un token publico y privado
 					.orElse(ResponseEntity.notFound().build());                                                         //Si no existe, envia un error
 		} else return ResponseEntity.notFound().build();                                                                //Si el String no es correcto, enviar error
+	}
+
+	/**
+	 * Termina de sesion vinculada a las Credenciales recibidas
+	 *
+	 * @param credentials Objeto JSON {@link Credentials}
+	 * @return {@link ResponseEntity} con el body {@link String} si es aplicable
+	 */
+	@GetMapping
+	public ResponseEntity<String> logout(@RequestHeader("Credentials") Credentials credentials) {
+		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
+				.map(usuario -> {
+					session.remove(credentials.getToken());
+					return ResponseEntity.ok("Logged out");
+				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
 	}
 
 	/**

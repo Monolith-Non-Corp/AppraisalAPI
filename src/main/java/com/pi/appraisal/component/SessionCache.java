@@ -42,6 +42,15 @@ public class SessionCache {
 	}
 
 	/**
+	 * Termina la sesion con el token {@param uuid}
+	 *
+	 * @param uuid El token publico
+	 */
+	public void remove(UUID uuid) {
+		this.cacheMap.remove(uuid);
+	}
+
+	/**
 	 * Verifica que las {@param credentials} sean validas y que el usuario tenga el nivel de autorizacion indicado
 	 *
 	 * @param credentials Las {@link Credentials} de la sesion
