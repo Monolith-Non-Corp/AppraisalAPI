@@ -50,7 +50,7 @@ public class SessionController {
 			return usuarioRepository.findByUsernameAndPassword(data[0], data[1])                                        //Busca el usuario con el email y password
 					.map(usuario -> ResponseEntity.ok(session.init(usuario)))                                           //Si existe, inicializa el usuario con un token publico y privado
 					.orElse(ResponseEntity.notFound().build());                                                         //Si no existe, envia un error
-		} else return ResponseEntity.notFound().build();                                                                //Si el String no es correcto, enviar error
+		} else return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();                                  //Si el String no es correcto, enviar error
 	}
 
 	/**
