@@ -6,8 +6,9 @@ import com.pi.appraisal.util.Credentials;
 import com.pi.appraisal.util.Option;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -62,17 +63,21 @@ public class SessionCache {
 		return getSession(credentials.getToken())                                                                       //Consigue la sesion almacenada
 				.filter(session -> session.priviledge == priviledge || priviledge == Priviledge.ANY)                    //Verificar que la sesion tenga el privilegio requeridos
 				.map(session -> {
-					String testHash = String.format("{%s}:{%d}", session.key.toString(), credentials.getTimestamp());   //Crear hash
+					String key = session.key.toString();
+					String token = session.token.toString();
+					String testHash = String.format("{%s}:{%s}:{%d}", key, token, credentials.getTimestamp());          //Crear hash
 					boolean match = false;
 					try {
-						MessageDigest digest = MessageDigest.getInstance("SHA-256");                                    //Conseguir instancia de SHA-264
-						byte[] bytes = digest.digest(testHash.getBytes(StandardCharsets.UTF_8));                        //Convertir hash a bytes encriptados
+						Mac sha256 = Mac.getInstance("HmacSHA256");                                                     //Conseguir instancia de SHA-264
+						SecretKeySpec secret = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");//Convertir token privado a secret key
+						sha256.init(secret);                                                                            //Inicializar secret key
+						byte[] bytes = sha256.doFinal(testHash.getBytes(StandardCharsets.UTF_8));                       //Convertir hash a bytes encriptados
 						String hash = Base64.getEncoder().encodeToString(bytes);                                        //Convertir bytes encriptados a String
 						match = credentials.hashEquals(hash);                                                           //Verificar si los hash coinciden
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					return match ? new Usuario(session.userId) : null;                                                  //Si los hash coinciden
+					return match ? new Usuario(session.userId) : null;                                                  //Si los hash coinciden, retorna el usuario con su id o nulo
 				});
 	}
 
