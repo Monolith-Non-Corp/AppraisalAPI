@@ -75,9 +75,16 @@ public class SessionController {
 	 * @return {@link ResponseEntity} con el body {@link Boolean} si es aplicable
 	 */
 	@GetMapping("validate")
-	public ResponseEntity<Boolean> validate(@RequestHeader("Credentials") Credentials credentials) {
+	public ResponseEntity<String> validate(@RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
-				.map(usuario -> ResponseEntity.ok(usuarioRepository.exists(usuario)))                                   //Si es valido, envia si el usuario existe
-				.orElse(ResponseEntity.notFound().build());                                                             //Si no es valido, enviar error
+				.map(usuario -> {
+					boolean valid = usuarioRepository.exists(usuario);                                                  //Valida si el usuario existe
+					if(valid) {
+						return ResponseEntity.ok("Session is active");                                                  //Si existe, la sesion se mantiene
+					} else {
+						session.remove(credentials.getToken());                                                         //Si no existe, la sesion se termina
+						return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Session is inactive");
+					}
+				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
 	}
 }
