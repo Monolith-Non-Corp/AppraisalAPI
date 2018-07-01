@@ -42,7 +42,7 @@ public class SessionController {
 	 * @param credentials String codificado en base64 con la forma '(email)(:)(password)'
 	 * @return {@link ResponseEntity} con el body del {@link Usuario} si es aplicable
 	 */
-	@GetMapping
+	@GetMapping("login")
 	public ResponseEntity<Usuario> login(@RequestHeader("Credentials") String credentials) {
 		credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));                               //Convierte a String UTF-8 un base64 con el email y password
 		if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {                                                        //Verifica que el String tenga la forma '(email)(:)(password)'
@@ -59,7 +59,7 @@ public class SessionController {
 	 * @param credentials Objeto JSON {@link Credentials}
 	 * @return {@link ResponseEntity} con el body {@link String} si es aplicable
 	 */
-	@GetMapping
+	@GetMapping("logout")
 	public ResponseEntity<String> logout(@RequestHeader("Credentials") Credentials credentials) {
 		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
 				.map(usuario -> {
