@@ -85,12 +85,4 @@ public class PracticaEspecifica {
 	public void setEvidencias(Set<Evidencia> evidencias) {
 		this.evidencias = evidencias;
 	}
-
-	public interface PracticaEspecificaImpl {
-		String getDescripcion();
-
-		String getNombre();
-
-		int getId();
-	}
 }

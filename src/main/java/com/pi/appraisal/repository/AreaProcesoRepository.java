@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AreaProcesoRepository extends Repository<AreaProceso, Integer> {
-	List<AreaProceso.AreaProcesoImpl> findAllByNivel(Nivel nivel);
+	List<AreaProceso> findAllByNivel(Nivel nivel);
 
 	Optional<AreaProceso> findById(Integer id);
 }

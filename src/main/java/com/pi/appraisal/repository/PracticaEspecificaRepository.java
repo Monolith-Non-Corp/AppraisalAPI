@@ -7,5 +7,5 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 
 public interface PracticaEspecificaRepository extends Repository<PracticaEspecifica, Integer> {
-	List<PracticaEspecifica.PracticaEspecificaImpl> findAllByMetaEspecifica(MetaEspecifica meta);
+	List<PracticaEspecifica> findAllByMetaEspecifica(MetaEspecifica meta);
 }

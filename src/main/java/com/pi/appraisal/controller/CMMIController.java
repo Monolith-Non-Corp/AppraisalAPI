@@ -1,12 +1,9 @@
 package com.pi.appraisal.controller;
 
 import com.pi.appraisal.entity.AreaProceso;
-import com.pi.appraisal.entity.AreaProceso.AreaProcesoImpl;
 import com.pi.appraisal.entity.MetaEspecifica;
-import com.pi.appraisal.entity.MetaEspecifica.MetaEspecificaImpl;
 import com.pi.appraisal.entity.Nivel;
-import com.pi.appraisal.entity.Nivel.NivelImpl;
-import com.pi.appraisal.entity.PracticaEspecifica.PracticaEspecificaImpl;
+import com.pi.appraisal.entity.PracticaEspecifica;
 import com.pi.appraisal.repository.AreaProcesoRepository;
 import com.pi.appraisal.repository.MetaEspecificaRepository;
 import com.pi.appraisal.repository.NivelRepository;
@@ -46,22 +43,22 @@ public class CMMIController {
 	}
 
 	@GetMapping("nivel/{lvl}")
-	public ResponseEntity<NivelImpl> getNivel(@PathVariable("lvl") Integer lvl) {
+	public ResponseEntity<Nivel> getNivel(@PathVariable("lvl") Integer lvl) {
 		return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping("area/{nivel}")
-	public ResponseEntity<List<AreaProcesoImpl>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
+	public ResponseEntity<List<AreaProceso>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
 		return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)));
 	}
 
 	@GetMapping("meta/{area}")
-	public ResponseEntity<List<MetaEspecificaImpl>> getMetaEspecificas(@PathVariable("area") Integer area) {
+	public ResponseEntity<List<MetaEspecifica>> getMetaEspecificas(@PathVariable("area") Integer area) {
 		return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)));
 	}
 
 	@GetMapping("practica/{meta}")
-	public ResponseEntity<List<PracticaEspecificaImpl>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
+	public ResponseEntity<List<PracticaEspecifica>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
 		return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)));
 	}
 }

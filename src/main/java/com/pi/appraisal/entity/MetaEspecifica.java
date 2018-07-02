@@ -89,13 +89,4 @@ public class MetaEspecifica {
 	public void setPracticaEspecificas(Set<PracticaEspecifica> practicaEspecificas) {
 		this.practicaEspecificas = practicaEspecificas;
 	}
-
-	public interface MetaEspecificaImpl {
-		String getDescripcion();
-
-		String getNombre();
-
-		int getId();
-
-	}
 }

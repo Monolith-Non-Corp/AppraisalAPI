@@ -75,10 +75,4 @@ public class Nivel {
 	public void setOrganizacions(Set<Organizacion> organizacions) {
 		this.organizacions = organizacions;
 	}
-
-	public interface NivelImpl {
-		String getDescripcion();
-
-		int getLvl();
-	}
 }
