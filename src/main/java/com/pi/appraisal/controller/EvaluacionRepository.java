@@ -1,16 +1,15 @@
 package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
-import com.pi.appraisal.entity.Artefacto;
-import com.pi.appraisal.entity.Evidencia;
-import com.pi.appraisal.entity.Hipervinculo;
-import com.pi.appraisal.entity.Instancia;
+import com.pi.appraisal.entity.*;
 import com.pi.appraisal.repository.OrganizacionRepository;
 import com.pi.appraisal.util.Credentials;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ADMINISTRADOR;
@@ -58,6 +57,22 @@ public class EvaluacionRepository {
 						}
 					}
 					return ResponseEntity.ok(status != null ? status : Status.NO_CUMPLE);
+				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+	}
+
+	@GetMapping("missing/{organizacion}")
+	public ResponseEntity<List<PracticaEspecifica>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
+																 @RequestHeader("Credentials") Credentials credentials) {
+		return session.authenticate(credentials, ADMINISTRADOR)
+				.map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))
+				.map(organizacion -> {
+					List<PracticaEspecifica> list = new ArrayList<>();
+					organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {
+						if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {
+							list.add(evidencia.getPracticaEspecifica());
+						}
+					}));
+					return ResponseEntity.ok(list);
 				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
 	}
 
