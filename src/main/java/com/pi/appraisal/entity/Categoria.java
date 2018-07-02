@@ -1,5 +1,6 @@
 package com.pi.appraisal.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ public class Categoria {
 
 	private int id;
 	private String nombre;
+	@JsonIgnore
 	private Set<AreaProceso> areaProcesos = new HashSet<>(0);
 
 	public Categoria() {
