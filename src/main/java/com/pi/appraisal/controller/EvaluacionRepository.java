@@ -29,20 +29,20 @@ public class EvaluacionRepository {
     @GetMapping("{organizacion}")
     public ResponseEntity<Status> validate(@PathVariable("organizacion") Integer organizacionIn,
                                            @RequestHeader("Credentials") Credentials credentials) {
-        return session.authenticate(credentials, ADMINISTRADOR)
-                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))
+        return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
+                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
                     Status status = null;
                     outerLoop:
-                    for (Instancia instancia : organizacion.getInstancias()) {
+                    for (Instancia instancia : organizacion.getInstancias()) {                                          //Por cada instancia de la organizacion
                         innerLoop:
-                        for (Evidencia evidencia : instancia.getEvidencias()) {
+                        for (Evidencia evidencia : instancia.getEvidencias()) {                                         //Por cada evidencia de la instancia
                             Set<Artefacto> arts = evidencia.getArtefactos();
                             Set<Hipervinculo> hips = evidencia.getHipervinculos();
                             if (status == null) {
-                                if (arts.isEmpty() && hips.isEmpty()) status = Status.NO_CUMPLE;
-                                else status = Status.SI_CUMPLE;
-                            } else switch (status) {
+                                if (arts.isEmpty() && hips.isEmpty()) status = Status.NO_CUMPLE;                        //Si ninguna cumple, no cumple
+                                else status = Status.SI_CUMPLE;                                                         //Si todas tienen evidencias, cumple
+                            } else switch (status) {                                                                    //Si una no tiene, en progreso
                                 case NO_CUMPLE:
                                     if (!arts.isEmpty() || !hips.isEmpty()) {
                                         status = Status.EN_PROGRESO;
@@ -58,24 +58,24 @@ public class EvaluacionRepository {
                             }
                         }
                     }
-                    return ResponseEntity.ok(status != null ? status : Status.NO_CUMPLE);
-                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+                    return ResponseEntity.ok(status != null ? status : Status.NO_CUMPLE);                               //Si todas tienen evidencias, cumple, si una no tiene, en progreso, si ninguna cunple,
+                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 
     @GetMapping("missing/{organizacion}")
     public ResponseEntity<List<PracticaEspecifica>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
                                                                  @RequestHeader("Credentials") Credentials credentials) {
-        return session.authenticate(credentials, ADMINISTRADOR)
-                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))
+        return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
+                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
-                    List<PracticaEspecifica> list = new ArrayList<>();
-                    organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {
-                        if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {
+                    List<PracticaEspecifica> list = new ArrayList<>();                                                  //Crear lista de evidencias incompletas
+                    organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {  //Por cada instancia
+                        if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {            //Si no tiene evidencias
                             list.add(evidencia.getPracticaEspecifica());
                         }
                     }));
-                    return ResponseEntity.ok(list);
-                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+                    return ResponseEntity.ok(list);                                                                     //Regresar lista
+                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 
     public enum Status {
