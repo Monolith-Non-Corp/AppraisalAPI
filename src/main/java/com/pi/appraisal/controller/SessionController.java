@@ -61,11 +61,11 @@ public class SessionController {
 	 */
 	@GetMapping("logout")
 	public ResponseEntity<String> logout(@RequestHeader("Credentials") Credentials credentials) {
-		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)
+		return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
 				.map(usuario -> {
-					session.remove(credentials.getToken());
+					session.remove(credentials.getToken());                                                             //Si es valido, eliminar credenciales
 					return ResponseEntity.ok("Logged out");
-				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+				}).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
 	}
 
 	/**
