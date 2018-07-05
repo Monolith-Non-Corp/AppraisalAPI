@@ -12,66 +12,66 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UsuarioRol {
 
-	private int id;
-	private String descripcion;
-	private Set<Usuario> usuarios = new HashSet<>(0);
+    private int id;
+    private String descripcion;
+    private Set<Usuario> usuarios = new HashSet<>(0);
 
-	public UsuarioRol() {
-	}
+    public UsuarioRol() {
+    }
 
-	public UsuarioRol(int id, String descripcion) {
-		this.id = id;
-		this.descripcion = descripcion;
-	}
+    public UsuarioRol(int id, String descripcion) {
+        this.id = id;
+        this.descripcion = descripcion;
+    }
 
-	public UsuarioRol(int id, String descripcion, Set<Usuario> usuarios) {
-		this.id = id;
-		this.descripcion = descripcion;
-		this.usuarios = usuarios;
-	}
+    public UsuarioRol(int id, String descripcion, Set<Usuario> usuarios) {
+        this.id = id;
+        this.descripcion = descripcion;
+        this.usuarios = usuarios;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@Column(name = "descripcion", nullable = false)
-	public String getDescripcion() {
-		return this.descripcion;
-	}
+    @Column(name = "descripcion", nullable = false)
+    public String getDescripcion() {
+        return this.descripcion;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuarioRol")
-	@JsonIgnore
-	public Set<Usuario> getUsuarios() {
-		return this.usuarios;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuarioRol")
+    @JsonIgnore
+    public Set<Usuario> getUsuarios() {
+        return this.usuarios;
+    }
 
-	public void setUsuarios(Set<Usuario> usuarios) {
-		this.usuarios = usuarios;
-	}
+    public void setUsuarios(Set<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
 
-	public enum Priviledge {
-		ORGANIZACION, ADMINISTRADOR, ANY;
+    public enum Priviledge {
+        ORGANIZACION, ADMINISTRADOR, ANY;
 
-		public static Priviledge from(UsuarioRol rol) {
-			switch (rol.id) {
-				case 1:
-					return ORGANIZACION;
-				case 2:
-					return ADMINISTRADOR;
-				default:
-					return ANY;
-			}
-		}
-	}
+        public static Priviledge from(UsuarioRol rol) {
+            switch (rol.id) {
+                case 1:
+                    return ORGANIZACION;
+                case 2:
+                    return ADMINISTRADOR;
+                default:
+                    return ANY;
+            }
+        }
+    }
 }

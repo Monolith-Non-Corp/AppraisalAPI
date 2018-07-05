@@ -6,11 +6,11 @@ import org.springframework.data.repository.Repository;
 import java.util.Optional;
 
 public interface UsuarioRepository extends Repository<Usuario, Integer> {
-	Usuario save(Usuario usuario);
+    Usuario save(Usuario usuario);
 
-	void delete(Usuario usuario);
+    void delete(Usuario usuario);
 
-	Optional<Usuario> findByUsernameAndPassword(String username, String password);
+    Optional<Usuario> findByUsernameAndPassword(String username, String password);
 
-	boolean exists(Usuario usuario);
+    boolean exists(Usuario usuario);
 }

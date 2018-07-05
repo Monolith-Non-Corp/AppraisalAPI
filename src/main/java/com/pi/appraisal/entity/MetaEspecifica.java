@@ -12,81 +12,81 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class MetaEspecifica {
 
-	private int id;
-	@JsonIgnore
-	private AreaProceso areaProceso;
-	private String nombre;
-	private String descripcion;
-	@JsonIgnore
-	private Set<PracticaEspecifica> practicaEspecificas = new HashSet<>(0);
+    private int id;
+    @JsonIgnore
+    private AreaProceso areaProceso;
+    private String nombre;
+    private String descripcion;
+    @JsonIgnore
+    private Set<PracticaEspecifica> practicaEspecificas = new HashSet<>(0);
 
-	public MetaEspecifica() {
-	}
+    public MetaEspecifica() {
+    }
 
-	public MetaEspecifica(int id) {
-		this.id = id;
-	}
+    public MetaEspecifica(int id) {
+        this.id = id;
+    }
 
-	public MetaEspecifica(int id, AreaProceso areaProceso, String nombre, String descripcion) {
-		this.id = id;
-		this.areaProceso = areaProceso;
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-	}
+    public MetaEspecifica(int id, AreaProceso areaProceso, String nombre, String descripcion) {
+        this.id = id;
+        this.areaProceso = areaProceso;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
 
-	public MetaEspecifica(int id, AreaProceso areaProceso, String nombre, String descripcion, Set<PracticaEspecifica> practicaEspecificas) {
-		this.id = id;
-		this.areaProceso = areaProceso;
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-		this.practicaEspecificas = practicaEspecificas;
-	}
+    public MetaEspecifica(int id, AreaProceso areaProceso, String nombre, String descripcion, Set<PracticaEspecifica> practicaEspecificas) {
+        this.id = id;
+        this.areaProceso = areaProceso;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.practicaEspecificas = practicaEspecificas;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "area_proceso", nullable = false)
-	public AreaProceso getAreaProceso() {
-		return this.areaProceso;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "area_proceso", nullable = false)
+    public AreaProceso getAreaProceso() {
+        return this.areaProceso;
+    }
 
-	public void setAreaProceso(AreaProceso areaProceso) {
-		this.areaProceso = areaProceso;
-	}
+    public void setAreaProceso(AreaProceso areaProceso) {
+        this.areaProceso = areaProceso;
+    }
 
-	@Column(name = "nombre", nullable = false)
-	public String getNombre() {
-		return this.nombre;
-	}
+    @Column(name = "nombre", nullable = false)
+    public String getNombre() {
+        return this.nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	@Column(name = "descripcion", nullable = false)
-	public String getDescripcion() {
-		return this.descripcion;
-	}
+    @Column(name = "descripcion", nullable = false)
+    public String getDescripcion() {
+        return this.descripcion;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "metaEspecifica")
-	public Set<PracticaEspecifica> getPracticaEspecificas() {
-		return this.practicaEspecificas;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "metaEspecifica")
+    public Set<PracticaEspecifica> getPracticaEspecificas() {
+        return this.practicaEspecificas;
+    }
 
-	public void setPracticaEspecificas(Set<PracticaEspecifica> practicaEspecificas) {
-		this.practicaEspecificas = practicaEspecificas;
-	}
+    public void setPracticaEspecificas(Set<PracticaEspecifica> practicaEspecificas) {
+        this.practicaEspecificas = practicaEspecificas;
+    }
 }

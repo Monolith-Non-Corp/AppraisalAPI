@@ -12,77 +12,77 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PracticaEspecifica {
 
-	private int id;
-	@JsonIgnore
-	private MetaEspecifica metaEspecifica;
-	private String nombre;
-	private String descripcion;
-	@JsonIgnore
-	private Set<Evidencia> evidencias = new HashSet<>(0);
+    private int id;
+    @JsonIgnore
+    private MetaEspecifica metaEspecifica;
+    private String nombre;
+    private String descripcion;
+    @JsonIgnore
+    private Set<Evidencia> evidencias = new HashSet<>(0);
 
-	public PracticaEspecifica() {
-	}
+    public PracticaEspecifica() {
+    }
 
-	public PracticaEspecifica(int id, MetaEspecifica metaEspecifica, String nombre, String descripcion) {
-		this.id = id;
-		this.metaEspecifica = metaEspecifica;
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-	}
+    public PracticaEspecifica(int id, MetaEspecifica metaEspecifica, String nombre, String descripcion) {
+        this.id = id;
+        this.metaEspecifica = metaEspecifica;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
 
-	public PracticaEspecifica(int id, MetaEspecifica metaEspecifica, String nombre, String descripcion, Set<Evidencia> evidencias) {
-		this.id = id;
-		this.metaEspecifica = metaEspecifica;
-		this.nombre = nombre;
-		this.descripcion = descripcion;
-		this.evidencias = evidencias;
-	}
+    public PracticaEspecifica(int id, MetaEspecifica metaEspecifica, String nombre, String descripcion, Set<Evidencia> evidencias) {
+        this.id = id;
+        this.metaEspecifica = metaEspecifica;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.evidencias = evidencias;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "meta_especifica", nullable = false)
-	public MetaEspecifica getMetaEspecifica() {
-		return this.metaEspecifica;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meta_especifica", nullable = false)
+    public MetaEspecifica getMetaEspecifica() {
+        return this.metaEspecifica;
+    }
 
-	public void setMetaEspecifica(MetaEspecifica metaEspecifica) {
-		this.metaEspecifica = metaEspecifica;
-	}
+    public void setMetaEspecifica(MetaEspecifica metaEspecifica) {
+        this.metaEspecifica = metaEspecifica;
+    }
 
-	@Column(name = "nombre", nullable = false)
-	public String getNombre() {
-		return this.nombre;
-	}
+    @Column(name = "nombre", nullable = false)
+    public String getNombre() {
+        return this.nombre;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	@Column(name = "descripcion", nullable = false)
-	public String getDescripcion() {
-		return this.descripcion;
-	}
+    @Column(name = "descripcion", nullable = false)
+    public String getDescripcion() {
+        return this.descripcion;
+    }
 
-	public void setDescripcion(String descripcion) {
-		this.descripcion = descripcion;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "practicaEspecifica")
-	public Set<Evidencia> getEvidencias() {
-		return this.evidencias;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "practicaEspecifica")
+    public Set<Evidencia> getEvidencias() {
+        return this.evidencias;
+    }
 
-	public void setEvidencias(Set<Evidencia> evidencias) {
-		this.evidencias = evidencias;
-	}
+    public void setEvidencias(Set<Evidencia> evidencias) {
+        this.evidencias = evidencias;
+    }
 }

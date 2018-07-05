@@ -11,26 +11,26 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
-	Evidencia save(Evidencia evidencia);
+    Evidencia save(Evidencia evidencia);
 
-	void delete(Evidencia evidencia);
+    void delete(Evidencia evidencia);
 
-	@Query("SELECT e FROM Evidencia e "
-			+ " JOIN Instancia i ON e.instancia = i.id "
-			+ " JOIN Organizacion o ON i.organizacion = o.id "
-			+ " WHERE e.id = :evidencia AND o.usuario = :usuario")
-	Evidencia findByUsuario(
-			@Param("evidencia") Integer evidencia,
-			@Param("usuario") Usuario usuario
-	);
+    @Query("SELECT e FROM Evidencia e "
+            + " JOIN Instancia i ON e.instancia = i.id "
+            + " JOIN Organizacion o ON i.organizacion = o.id "
+            + " WHERE e.id = :evidencia AND o.usuario = :usuario")
+    Evidencia findByUsuario(
+            @Param("evidencia") Integer evidencia,
+            @Param("usuario") Usuario usuario
+    );
 
-	@Query("SELECT e FROM Evidencia e"
-			+ " JOIN PracticaEspecifica p ON p.id = e.practicaEspecifica"
-			+ " JOIN MetaEspecifica m ON m.id = p.metaEspecifica"
-			+ " JOIN AreaProceso a ON a.id = m.areaProceso "
-			+ " WHERE a = :area AND e.instancia =  :instancia")
-	List<Evidencia> findAllByArea(
-			@Param("area") AreaProceso area,
-			@Param("instancia") Instancia instancia
-	);
+    @Query("SELECT e FROM Evidencia e"
+            + " JOIN PracticaEspecifica p ON p.id = e.practicaEspecifica"
+            + " JOIN MetaEspecifica m ON m.id = p.metaEspecifica"
+            + " JOIN AreaProceso a ON a.id = m.areaProceso "
+            + " WHERE a = :area AND e.instancia =  :instancia")
+    List<Evidencia> findAllByArea(
+            @Param("area") AreaProceso area,
+            @Param("instancia") Instancia instancia
+    );
 }

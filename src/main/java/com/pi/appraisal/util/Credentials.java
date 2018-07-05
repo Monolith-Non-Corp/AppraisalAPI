@@ -11,50 +11,50 @@ import java.util.UUID;
  */
 public class Credentials {
 
-	private UUID token;                                                                                                 //Token publico
-	private String hash;                                                                                                //Hash del token privado + timestamp
-	private Long timestamp;                                                                                             //Tiempo UTF del Http request al enviarse
+    private UUID token;                                                                                                 //Token publico
+    private String hash;                                                                                                //Hash del token privado + timestamp
+    private Long timestamp;                                                                                             //Tiempo UTF del Http request al enviarse
 
-	public Credentials() {
-	}
+    public Credentials() {
+    }
 
-	public Credentials(UUID token, Long timestamp, String hash) {
-		this.token = token;
-		this.timestamp = timestamp;
-		this.hash = hash;
-	}
+    public Credentials(UUID token, Long timestamp, String hash) {
+        this.token = token;
+        this.timestamp = timestamp;
+        this.hash = hash;
+    }
 
-	public boolean isExpired() {
-		long now = new Date().getTime();
-		return now - timestamp > SessionCache.REQUEST_TIMEOUT;
-	}
+    public boolean isExpired() {
+        long now = new Date().getTime();
+        return now - timestamp > SessionCache.REQUEST_TIMEOUT;
+    }
 
-	public boolean hashEquals(String hash) {
-		return Objects.equals(this.hash, hash);
-	}
+    public boolean hashEquals(String hash) {
+        return Objects.equals(this.hash, hash);
+    }
 
-	public UUID getToken() {
-		return token;
-	}
+    public UUID getToken() {
+        return token;
+    }
 
-	public void setToken(UUID token) {
-		this.token = token;
-	}
+    public void setToken(UUID token) {
+        this.token = token;
+    }
 
-	public String getHash() {
-		return hash;
-	}
+    public String getHash() {
+        return hash;
+    }
 
-	public void setHash(String hash) {
-		this.hash = hash;
-	}
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
 
-	public Long getTimestamp() {
-		return timestamp;
-	}
+    public Long getTimestamp() {
+        return timestamp;
+    }
 
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
 
 }

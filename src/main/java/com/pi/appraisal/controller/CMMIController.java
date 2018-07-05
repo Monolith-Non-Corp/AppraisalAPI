@@ -25,40 +25,40 @@ import java.util.List;
 @RequestMapping("api/cmmi")
 public class CMMIController {
 
-	private final NivelRepository nivelRepository;
-	private final AreaProcesoRepository areaProcesoRepository;
-	private final MetaEspecificaRepository metaEspecificaRepository;
-	private final PracticaEspecificaRepository practicaEspecificaRepository;
+    private final NivelRepository nivelRepository;
+    private final AreaProcesoRepository areaProcesoRepository;
+    private final MetaEspecificaRepository metaEspecificaRepository;
+    private final PracticaEspecificaRepository practicaEspecificaRepository;
 
-	@Autowired
-	public CMMIController(
-			NivelRepository nivelRepository,
-			AreaProcesoRepository areaProcesoRepository,
-			MetaEspecificaRepository metaEspecificaRepository,
-			PracticaEspecificaRepository practicaEspecificaRepository) {
-		this.nivelRepository = nivelRepository;
-		this.areaProcesoRepository = areaProcesoRepository;
-		this.metaEspecificaRepository = metaEspecificaRepository;
-		this.practicaEspecificaRepository = practicaEspecificaRepository;
-	}
+    @Autowired
+    public CMMIController(
+            NivelRepository nivelRepository,
+            AreaProcesoRepository areaProcesoRepository,
+            MetaEspecificaRepository metaEspecificaRepository,
+            PracticaEspecificaRepository practicaEspecificaRepository) {
+        this.nivelRepository = nivelRepository;
+        this.areaProcesoRepository = areaProcesoRepository;
+        this.metaEspecificaRepository = metaEspecificaRepository;
+        this.practicaEspecificaRepository = practicaEspecificaRepository;
+    }
 
-	@GetMapping("nivel/{lvl}")
-	public ResponseEntity<Nivel> getNivel(@PathVariable("lvl") Integer lvl) {
-		return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-	}
+    @GetMapping("nivel/{lvl}")
+    public ResponseEntity<Nivel> getNivel(@PathVariable("lvl") Integer lvl) {
+        return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 
-	@GetMapping("area/{nivel}")
-	public ResponseEntity<List<AreaProceso>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
-		return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)));
-	}
+    @GetMapping("area/{nivel}")
+    public ResponseEntity<List<AreaProceso>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
+        return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)));
+    }
 
-	@GetMapping("meta/{area}")
-	public ResponseEntity<List<MetaEspecifica>> getMetaEspecificas(@PathVariable("area") Integer area) {
-		return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)));
-	}
+    @GetMapping("meta/{area}")
+    public ResponseEntity<List<MetaEspecifica>> getMetaEspecificas(@PathVariable("area") Integer area) {
+        return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)));
+    }
 
-	@GetMapping("practica/{meta}")
-	public ResponseEntity<List<PracticaEspecifica>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
-		return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)));
-	}
+    @GetMapping("practica/{meta}")
+    public ResponseEntity<List<PracticaEspecifica>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
+        return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)));
+    }
 }

@@ -13,118 +13,118 @@ import java.util.UUID;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario {
 
-	private int id;
-	private UsuarioRol usuarioRol;
-	private Persona persona;
-	@JsonIgnore
-	private String username;
-	@JsonIgnore
-	private String password;
-	@JsonIgnore
-	private Set<Organizacion> organizacions = new HashSet<>(0);
+    private int id;
+    private UsuarioRol usuarioRol;
+    private Persona persona;
+    @JsonIgnore
+    private String username;
+    @JsonIgnore
+    private String password;
+    @JsonIgnore
+    private Set<Organizacion> organizacions = new HashSet<>(0);
 
-	@Transient
-	private UUID token;
-	@Transient
-	private UUID key;
+    @Transient
+    private UUID token;
+    @Transient
+    private UUID key;
 
-	public Usuario() {
-	}
+    public Usuario() {
+    }
 
-	public Usuario(int id) {
-		this.id = id;
-	}
+    public Usuario(int id) {
+        this.id = id;
+    }
 
-	public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password) {
-		this.id = id;
-		this.usuarioRol = usuarioRol;
-		this.persona = persona;
-		this.username = username;
-		this.password = password;
-	}
+    public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password) {
+        this.id = id;
+        this.usuarioRol = usuarioRol;
+        this.persona = persona;
+        this.username = username;
+        this.password = password;
+    }
 
-	public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password, Set<Organizacion> organizacions) {
-		this.id = id;
-		this.usuarioRol = usuarioRol;
-		this.persona = persona;
-		this.username = username;
-		this.password = password;
-		this.organizacions = organizacions;
-	}
+    public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password, Set<Organizacion> organizacions) {
+        this.id = id;
+        this.usuarioRol = usuarioRol;
+        this.persona = persona;
+        this.username = username;
+        this.password = password;
+        this.organizacions = organizacions;
+    }
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", unique = true, nullable = false)
-	public int getId() {
-		return this.id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", unique = true, nullable = false)
+    public int getId() {
+        return this.id;
+    }
 
-	public void setId(int id) {
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "rol", nullable = false)
-	public UsuarioRol getUsuarioRol() {
-		return this.usuarioRol;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rol", nullable = false)
+    public UsuarioRol getUsuarioRol() {
+        return this.usuarioRol;
+    }
 
-	public void setUsuarioRol(UsuarioRol usuarioRol) {
-		this.usuarioRol = usuarioRol;
-	}
+    public void setUsuarioRol(UsuarioRol usuarioRol) {
+        this.usuarioRol = usuarioRol;
+    }
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "persona", nullable = false)
-	public Persona getPersona() {
-		return this.persona;
-	}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "persona", nullable = false)
+    public Persona getPersona() {
+        return this.persona;
+    }
 
-	public void setPersona(Persona persona) {
-		this.persona = persona;
-	}
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
 
-	@Column(name = "username", nullable = false)
-	public String getUsername() {
-		return this.username;
-	}
+    @Column(name = "username", nullable = false)
+    public String getUsername() {
+        return this.username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	@Column(name = "password", nullable = false)
-	public String getPassword() {
-		return this.password;
-	}
+    @Column(name = "password", nullable = false)
+    public String getPassword() {
+        return this.password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
-	public Set<Organizacion> getOrganizacions() {
-		return this.organizacions;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+    public Set<Organizacion> getOrganizacions() {
+        return this.organizacions;
+    }
 
-	public void setOrganizacions(Set<Organizacion> organizacions) {
-		this.organizacions = organizacions;
-	}
+    public void setOrganizacions(Set<Organizacion> organizacions) {
+        this.organizacions = organizacions;
+    }
 
-	@Transient
-	public UUID getToken() {
-		return token;
-	}
+    @Transient
+    public UUID getToken() {
+        return token;
+    }
 
-	public void setToken(UUID token) {
-		this.token = token;
-	}
+    public void setToken(UUID token) {
+        this.token = token;
+    }
 
-	@Transient
-	public UUID getKey() {
-		return key;
-	}
+    @Transient
+    public UUID getKey() {
+        return key;
+    }
 
-	public void setKey(UUID key) {
-		this.key = key;
-	}
+    public void setKey(UUID key) {
+        this.key = key;
+    }
 }
