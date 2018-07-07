@@ -46,13 +46,13 @@ public class HipervinculoController {
      */
     @PostMapping("{evidencia}")
     public ResponseEntity<HipervinculoImpl> add(@PathVariable("evidencia") Integer evidenciaIn,
-                                                @RequestBody Hipervinculo hipervinculo,
+                                                @RequestBody String hipervinculo,
                                                 @RequestHeader("Credentials") Credentials credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario))                                //Si es valido, buscar evidencia con el usuario
                 .map(evidencia -> {
                     Hipervinculo h = new Hipervinculo();                                                                //Crear hypervinculo
-                    h.setLink(hipervinculo.getLink());
+                    h.setLink(hipervinculo);
                     h.setEvidencia(evidencia);                                                                          //Asignar evidencia
                     return ResponseEntity.ok(Impl.from(hipervinculoRepository.save(h)));                                //Enviar hypervinculo
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
