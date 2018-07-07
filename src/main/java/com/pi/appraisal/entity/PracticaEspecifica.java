@@ -1,23 +1,17 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Practica_Especifica", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PracticaEspecifica {
 
     private int id;
-    @JsonIgnore
     private MetaEspecifica metaEspecifica;
     private String nombre;
     private String descripcion;
-    @JsonIgnore
     private Set<Evidencia> evidencias = new HashSet<>(0);
 
     public PracticaEspecifica() {
@@ -84,5 +78,11 @@ public class PracticaEspecifica {
 
     public void setEvidencias(Set<Evidencia> evidencias) {
         this.evidencias = evidencias;
+    }
+
+    public static class PracticaEspecificaImpl {
+        public int id;
+        public String nombre;
+        public String descripcion;
     }
 }

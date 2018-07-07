@@ -1,23 +1,17 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Organizacion", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Organizacion {
 
     private int id;
-    @JsonIgnore
     private Usuario usuario;
     private Nivel nivel;
     private String nombre;
-    @JsonIgnore
     private Set<Instancia> instancias = new HashSet<>(0);
 
     public Organizacion() {
@@ -87,11 +81,9 @@ public class Organizacion {
         this.instancias = instancias;
     }
 
-    public interface OrganizacionImpl {
-        int getId();
-
-        Nivel getNivel();
-
-        String getNombre();
+    public static class OrganizacionImpl {
+        public int id;
+        public Nivel.NivelImpl nivel;
+        public String nombre;
     }
 }

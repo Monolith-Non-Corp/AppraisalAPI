@@ -1,21 +1,15 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Evidencia", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Evidencia {
 
     private int id;
-    @JsonIgnore
     private Instancia instancia;
-    @JsonIgnore
     private PracticaEspecifica practicaEspecifica;
     private Set<Artefacto> artefactos = new HashSet<>(0);
     private Set<Hipervinculo> hipervinculos = new HashSet<>(0);
@@ -84,4 +78,9 @@ public class Evidencia {
         this.hipervinculos = hipervinculos;
     }
 
+    public static class EvidenciaImpl {
+        public int id;
+        public Set<Artefacto.ArtefactoImpl> artefactos = new HashSet<>(0);
+        public Set<Hipervinculo.HipervinculoImpl> hipervinculos = new HashSet<>(0);
+    }
 }

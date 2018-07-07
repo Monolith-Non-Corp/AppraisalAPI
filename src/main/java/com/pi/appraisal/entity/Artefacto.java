@@ -1,20 +1,14 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "Artefacto", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Artefacto {
 
     private int id;
-    @JsonIgnore
     private Evidencia evidencia;
-    @JsonIgnore
     private byte[] archivo;
     private String nombre;
     private String tipo;
@@ -103,4 +97,10 @@ public class Artefacto {
         this.fecha = fecha;
     }
 
+    public static class ArtefactoImpl {
+        public int id;
+        public String nombre;
+        public String tipo;
+        public Date fecha;
+    }
 }

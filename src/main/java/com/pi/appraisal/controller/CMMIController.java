@@ -1,9 +1,13 @@
 package com.pi.appraisal.controller;
 
 import com.pi.appraisal.entity.AreaProceso;
+import com.pi.appraisal.entity.AreaProceso.AreaProcesoImpl;
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.entity.MetaEspecifica;
+import com.pi.appraisal.entity.MetaEspecifica.MetaEspecificaImpl;
 import com.pi.appraisal.entity.Nivel;
-import com.pi.appraisal.entity.PracticaEspecifica;
+import com.pi.appraisal.entity.Nivel.NivelImpl;
+import com.pi.appraisal.entity.PracticaEspecifica.PracticaEspecificaImpl;
 import com.pi.appraisal.repository.AreaProcesoRepository;
 import com.pi.appraisal.repository.MetaEspecificaRepository;
 import com.pi.appraisal.repository.NivelRepository;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controlador de CMMI.
@@ -43,22 +48,31 @@ public class CMMIController {
     }
 
     @GetMapping("nivel/{lvl}")
-    public ResponseEntity<Nivel> getNivel(@PathVariable("lvl") Integer lvl) {
-        return nivelRepository.findByLvl(lvl).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<NivelImpl> getNivel(@PathVariable("lvl") Integer lvl) {
+        return nivelRepository.findByLvl(lvl)
+                .map(Impl::from)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("area/{nivel}")
-    public ResponseEntity<List<AreaProceso>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
-        return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)));
+    public ResponseEntity<List<AreaProcesoImpl>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
+        return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)).stream()
+                .map(Impl::from)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("meta/{area}")
-    public ResponseEntity<List<MetaEspecifica>> getMetaEspecificas(@PathVariable("area") Integer area) {
-        return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)));
+    public ResponseEntity<List<MetaEspecificaImpl>> getMetaEspecificas(@PathVariable("area") Integer area) {
+        return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)).stream()
+                .map(Impl::from)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("practica/{meta}")
-    public ResponseEntity<List<PracticaEspecifica>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
-        return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)));
+    public ResponseEntity<List<PracticaEspecificaImpl>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
+        return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)).stream()
+                .map(Impl::from)
+                .collect(Collectors.toList()));
     }
 }

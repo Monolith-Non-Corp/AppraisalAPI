@@ -1,7 +1,9 @@
 package com.pi.appraisal.controller;
 
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.*;
+import com.pi.appraisal.entity.PracticaEspecifica.PracticaEspecificaImpl;
 import com.pi.appraisal.repository.OrganizacionRepository;
 import com.pi.appraisal.util.Credentials;
 import org.springframework.http.HttpStatus;
@@ -63,15 +65,15 @@ public class EvaluacionRepository {
     }
 
     @GetMapping("missing/{organizacion}")
-    public ResponseEntity<List<PracticaEspecifica>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
-                                                                 @RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<List<PracticaEspecificaImpl>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
+                                                                     @RequestHeader("Credentials") Credentials credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
                 .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
-                    List<PracticaEspecifica> list = new ArrayList<>();                                                  //Crear lista de evidencias incompletas
+                    List<PracticaEspecificaImpl> list = new ArrayList<>();                                              //Crear lista de evidencias incompletas
                     organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {  //Por cada instancia
                         if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {            //Si no tiene evidencias
-                            list.add(evidencia.getPracticaEspecifica());
+                            list.add(Impl.from(evidencia.getPracticaEspecifica()));
                         }
                     }));
                     return ResponseEntity.ok(list);                                                                     //Regresar lista

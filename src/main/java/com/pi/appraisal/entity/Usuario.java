@@ -1,8 +1,5 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,23 +7,19 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "Usuario", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Usuario {
 
     private int id;
     private UsuarioRol usuarioRol;
     private Persona persona;
-    @JsonIgnore
     private String username;
-    @JsonIgnore
     private String password;
-    @JsonIgnore
     private Set<Organizacion> organizacions = new HashSet<>(0);
 
     @Transient
-    private UUID token;
+    public UUID token;
     @Transient
-    private UUID key;
+    public UUID key;
 
     public Usuario() {
     }
@@ -110,21 +103,12 @@ public class Usuario {
         this.organizacions = organizacions;
     }
 
-    @Transient
-    public UUID getToken() {
-        return token;
-    }
-
-    public void setToken(UUID token) {
-        this.token = token;
-    }
-
-    @Transient
-    public UUID getKey() {
-        return key;
-    }
-
-    public void setKey(UUID key) {
-        this.key = key;
+    public static class UsuarioImpl {
+        public int id;
+        public String username;
+        public Persona.PersonaImpl persona;
+        public UsuarioRol.UsuarioRolImpl usuarioRol;
+        public UUID token;
+        public UUID key;
     }
 }

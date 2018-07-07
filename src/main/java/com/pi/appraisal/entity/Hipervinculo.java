@@ -1,18 +1,13 @@
 package com.pi.appraisal.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "Hipervinculo", schema = "dbo", catalog = "Appraisal")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Hipervinculo {
 
     private int id;
-    @JsonIgnore
     private Evidencia evidencia;
     private String link;
     private Date fecha;
@@ -73,4 +68,9 @@ public class Hipervinculo {
         this.fecha = fecha;
     }
 
+    public static class HipervinculoImpl {
+        public int id;
+        public String link;
+        public Date fecha;
+    }
 }

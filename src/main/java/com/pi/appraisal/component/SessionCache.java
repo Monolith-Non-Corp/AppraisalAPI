@@ -128,8 +128,8 @@ public class SessionCache {
         private static Session of(Usuario usuario) {
             UUID token = UUID.randomUUID();                                                                             //Crea el token publico
             UUID key = UUID.randomUUID();                                                                               //Crea el token privado
-            usuario.setKey(key);                                                                                        //Asigna el token privado al usuario
-            usuario.setToken(token);                                                                                    //Asigna el token publico al usuario
+            usuario.key = key;                                                                                          //Asigna el token privado al usuario
+            usuario.token = token;                                                                                      //Asigna el token publico al usuario
             return new Session(key, token, usuario.getId(), new Date(), Priviledge.from(usuario.getUsuarioRol()));      //Crea una nueva sesion
         }
     }

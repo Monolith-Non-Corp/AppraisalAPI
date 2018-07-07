@@ -1,7 +1,9 @@
 package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.entity.Usuario;
+import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol;
 import com.pi.appraisal.repository.UsuarioRepository;
 import com.pi.appraisal.util.Credentials;
@@ -43,12 +45,12 @@ public class SessionController {
      * @return {@link ResponseEntity} con el body del {@link Usuario} si es aplicable
      */
     @GetMapping("login")
-    public ResponseEntity<Usuario> login(@RequestHeader("Credentials") String credentials) {
+    public ResponseEntity<UsuarioImpl> login(@RequestHeader("Credentials") String credentials) {
         credentials = StringUtils.newStringUtf8(Base64.getDecoder().decode(credentials));                               //Convierte a String UTF-8 un base64 con el email y password
         if (Pattern.matches(CREDENTIALS_MATCHER, credentials)) {                                                        //Verifica que el String tenga la forma '(email)(:)(password)'
             String[] data = credentials.split(":", 2);                                                      //Separa el email y password
             return usuarioRepository.findByUsernameAndPassword(data[0], data[1])                                        //Busca el usuario con el email y password
-                    .map(usuario -> ResponseEntity.ok(session.init(usuario)))                                           //Si existe, inicializa el usuario con un token publico y privado
+                    .map(usuario -> ResponseEntity.ok(Impl.from(session.init(usuario))))                                //Si existe, inicializa el usuario con un token publico y privado
                     .orElse(ResponseEntity.notFound().build());                                                         //Si no existe, envia un error
         } else
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();                                     //Si el String no es correcto, enviar error

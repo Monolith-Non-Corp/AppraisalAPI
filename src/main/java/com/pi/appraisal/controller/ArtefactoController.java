@@ -2,6 +2,8 @@ package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Artefacto;
+import com.pi.appraisal.entity.Artefacto.ArtefactoImpl;
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.repository.ArtefactoRepository;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.util.Credentials;
@@ -14,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ORGANIZACION;
 
@@ -26,7 +29,10 @@ public class ArtefactoController {
     private final SessionCache session;
 
     @Autowired
-    public ArtefactoController(ArtefactoRepository artefactoRepository, EvidenciaRepository evidenciaRepository, SessionCache session) {
+    public ArtefactoController(
+            ArtefactoRepository artefactoRepository,
+            EvidenciaRepository evidenciaRepository,
+            SessionCache session) {
         this.artefactoRepository = artefactoRepository;
         this.evidenciaRepository = evidenciaRepository;
         this.session = session;
@@ -41,28 +47,28 @@ public class ArtefactoController {
      * @return El {@link com.pi.appraisal.entity.AreaProceso} creado si es aplicable
      */
     @PostMapping("{evidencia}")
-    public ResponseEntity<Artefacto> upload(@PathVariable("evidencia") Integer evidenciaIn,
-                                            @RequestParam("file") MultipartFile file,
-                                            @RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<ArtefactoImpl> upload(@PathVariable("evidencia") Integer evidenciaIn,
+                                                @RequestParam("file") MultipartFile file,
+                                                @RequestHeader("Credentials") Credentials credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario))                                //Si es valido, buscar la evidencia con el usuario
                 .map(evidencia -> {
                     if (file.isEmpty()) {                                                                               //Si el archivo esta vacio
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();                      //Enviar error
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<ArtefactoImpl>build();                      //Enviar error
                     }
                     byte[] bytes;
                     try {
                         bytes = file.getBytes();
                     } catch (IOException e) {                                                                           //Si existe un error al leer el archivo
                         e.printStackTrace();                                                                            //Imprimir error en consola
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<Artefacto>build();                      //Enviar error
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).<ArtefactoImpl>build();                      //Enviar error
                     }
                     Artefacto artefacto = new Artefacto();                                                              //Crear artefacto
                     artefacto.setArchivo(bytes);
                     artefacto.setNombre(file.getOriginalFilename());
                     artefacto.setTipo(file.getContentType());
                     artefacto.setEvidencia(evidencia);
-                    return ResponseEntity.ok(artefactoRepository.save(artefacto));                                      //Guardar artefacto
+                    return ResponseEntity.ok(Impl.from(artefactoRepository.save(artefacto)));                           //Guardar artefacto
                 }).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
     }
 
@@ -74,13 +80,13 @@ public class ArtefactoController {
      * @return El {@link com.pi.appraisal.entity.Artefacto} elminado si es aplicable
      */
     @DeleteMapping("{artefacto}")
-    public ResponseEntity<Artefacto> delete(@PathVariable("artefacto") Integer artefactoIn,
-                                            @RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<ArtefactoImpl> delete(@PathVariable("artefacto") Integer artefactoIn,
+                                                @RequestHeader("Credentials") Credentials credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))                                //Si es valido, buscar el artefacto con el usuario
                 .map(artefacto -> {
                     artefactoRepository.delete(artefacto);                                                              //Eliminar aretfacto
-                    return ResponseEntity.ok(artefacto);                                                                //Enviar artefacto eliminado
+                    return ResponseEntity.ok(Impl.from(artefacto));                                                     //Enviar artefacto eliminado
                 }).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
     }
 
@@ -111,11 +117,13 @@ public class ArtefactoController {
      * @return La lista de {@link com.pi.appraisal.entity.Artefacto} si es aplicable
      */
     @GetMapping("{evidencia}")
-    public ResponseEntity<List<Artefacto>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
-                                                  @RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<List<ArtefactoImpl>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
+                                                      @RequestHeader("Credentials") Credentials credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
-                .map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario))                             //Si es valido, buscar artefactos con el usuario y la evidencia
-                .map(ResponseEntity::ok)                                                                                //Enviar artefactos
+                .map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                     //Si es valido, buscar artefactos con el usuario y la evidencia
+                        .map(Impl::from)
+                        .collect(Collectors.toList())
+                ).map(ResponseEntity::ok)                                                                               //Enviar artefactos
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                        //Si no es valido, enviar error
     }
 }
