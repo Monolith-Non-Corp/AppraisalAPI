@@ -1,7 +1,7 @@
 package com.pi.appraisal.controller;
 
-import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.component.Impl;
+import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol;
@@ -9,6 +9,7 @@ import com.pi.appraisal.repository.UsuarioRepository;
 import com.pi.appraisal.util.Credentials;
 import org.apache.tomcat.util.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,10 +64,10 @@ public class SessionController {
      * @return {@link ResponseEntity} con el body {@link String} si es aplicable
      */
     @GetMapping("logout")
-    public ResponseEntity<String> logout(@RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<String> logout(@RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
                 .map(usuario -> {
-                    session.remove(credentials.getToken());                                                             //Si es valido, eliminar credenciales
+                    session.remove(credentials);                                                             //Si es valido, eliminar credenciales
                     return ResponseEntity.ok("Logged out");
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
@@ -78,14 +79,14 @@ public class SessionController {
      * @return {@link ResponseEntity} con el body {@link Boolean} si es aplicable
      */
     @GetMapping("validate")
-    public ResponseEntity<String> validate(@RequestHeader("Credentials") Credentials credentials) {
+    public ResponseEntity<String> validate(@RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
                 .map(usuario -> {
-                    boolean valid = usuarioRepository.exists(usuario);                                                  //Valida si el usuario existe
+                    boolean valid = usuarioRepository.exists(Example.of(usuario));                                      //Valida si el usuario existe
                     if (valid) {
                         return ResponseEntity.ok("Session is active");                                                  //Si existe, la sesion se mantiene
                     } else {
-                        session.remove(credentials.getToken());                                                         //Si no existe, la sesion se termina
+                        session.remove(credentials);                                                                    //Si no existe, la sesion se termina
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Session is inactive");
                     }
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error

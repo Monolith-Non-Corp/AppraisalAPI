@@ -49,7 +49,7 @@ public class ArtefactoController {
     @PostMapping("{evidencia}")
     public ResponseEntity<ArtefactoImpl> upload(@PathVariable("evidencia") Integer evidenciaIn,
                                                 @RequestParam("file") MultipartFile file,
-                                                @RequestHeader("Credentials") Credentials credentials) {
+                                                @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario))                                //Si es valido, buscar la evidencia con el usuario
                 .map(evidencia -> {
@@ -81,7 +81,7 @@ public class ArtefactoController {
      */
     @DeleteMapping("{artefacto}")
     public ResponseEntity<ArtefactoImpl> delete(@PathVariable("artefacto") Integer artefactoIn,
-                                                @RequestHeader("Credentials") Credentials credentials) {
+                                                @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))                                //Si es valido, buscar el artefacto con el usuario
                 .map(artefacto -> {
@@ -101,7 +101,7 @@ public class ArtefactoController {
     @GetMapping("{evidencia}/{artefacto}")
     public ResponseEntity<byte[]> getFile(@PathVariable("evidencia") Integer evidenciaIn,
                                           @PathVariable("artefacto") Integer artefactoIn,
-                                          @RequestHeader("Credentials") Credentials credentials) {
+                                          @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findByUsuario(evidenciaIn, artefactoIn, usuario))                   //Si es valido, buscar artefacto con el usuario y la evidencia
                 .map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)                   //Especificar tipo de contenido
@@ -118,7 +118,7 @@ public class ArtefactoController {
      */
     @GetMapping("{evidencia}")
     public ResponseEntity<List<ArtefactoImpl>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
-                                                      @RequestHeader("Credentials") Credentials credentials) {
+                                                      @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                     //Si es valido, buscar artefactos con el usuario y la evidencia
                         .map(Impl::from)

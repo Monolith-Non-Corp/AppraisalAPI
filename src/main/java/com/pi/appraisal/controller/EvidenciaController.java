@@ -52,7 +52,7 @@ public class EvidenciaController {
     @PostMapping("{instancia}/{area}")
     public ResponseEntity<List<EvidenciaImpl>> create(@PathVariable("instancia") Integer instanciaIn,
                                                       @PathVariable("area") Integer areaIn,
-                                                      @RequestHeader("Credentials") Credentials credentials) {
+                                                      @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar la instancia con el usuario
                 .map(instancia -> areaProcesoRepository.findById(areaIn)                                                //Si existe, buscar la area especificada
@@ -80,7 +80,7 @@ public class EvidenciaController {
      */
     @DeleteMapping("{instancia}")
     public ResponseEntity<String> delete(@PathVariable("instancia") Integer instanciaIn,
-                                         @RequestHeader("Credentials") Credentials credentials) {
+                                         @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
                 .map(instancia -> {
@@ -101,7 +101,7 @@ public class EvidenciaController {
     @GetMapping("{instancia}/{area}")
     public ResponseEntity<List<EvidenciaImpl>> get(@PathVariable("instancia") Integer instanciaIn,
                                                    @PathVariable("area") Integer areaIn,
-                                                   @RequestHeader("Credentials") Credentials credentials) {
+                                                   @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
                 .map(instancia -> areaProcesoRepository.findById(areaIn)                                                //Si existe, buscar la area especificada

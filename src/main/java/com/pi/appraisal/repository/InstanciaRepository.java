@@ -11,7 +11,7 @@ public interface InstanciaRepository extends Repository<Instancia, Integer> {
 
     void delete(Instancia instancia);
 
-    @Query("SELECT i FROM Instancia"
+    @Query("SELECT i FROM Instancia i"
             + " JOIN Organizacion o ON i.organizacion = o.id"
             + " WHERE i.id = :instancia AND o.usuario = :usuario ")
     Instancia findByUsuario(

@@ -4,6 +4,7 @@ import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.UsuarioRol.Priviledge;
 import com.pi.appraisal.util.Credentials;
 import com.pi.appraisal.util.Option;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Mac;
@@ -28,6 +29,12 @@ public class SessionCache {
         return null;                                                                                                    //Si no hay sesion o excede el tiempo, remover
     }; //Funcion de filtro de sesiones inactivas
     private Map<UUID, Session> cacheMap = new HashMap<>();
+    private final SessionConverter converter;
+
+    @Autowired
+    public SessionCache(SessionConverter sessionConverter) {
+        this.converter = sessionConverter;
+    }
 
     /**
      * Inicializa la sesion del {@param usuario}
@@ -45,20 +52,24 @@ public class SessionCache {
     /**
      * Termina la sesion con el token {@param uuid}
      *
-     * @param uuid El token publico
+     * @param json Las {@link Credentials} de la sesion
      */
-    public void remove(UUID uuid) {
-        this.cacheMap.remove(uuid);
+    public void remove(String json) {
+        Credentials credentials = converter.convert(json);
+        if(credentials.getToken() != null) {
+            this.cacheMap.remove(credentials.getToken());
+        }
     }
 
     /**
      * Verifica que las {@param credentials} sean validas y que el usuario tenga el nivel de autorizacion indicado
      *
-     * @param credentials Las {@link Credentials} de la sesion
+     * @param json Las {@link Credentials} de la sesion
      * @param priviledge  El {@link Priviledge} requerido
      * @return Un {@link Option} con el {@link Usuario} al que pertenece la sesion
      */
-    public Option<Usuario> authenticate(Credentials credentials, Priviledge priviledge) {
+    public Option<Usuario> authenticate(String json, Priviledge priviledge) {
+        Credentials credentials = converter.convert(json);
         if (credentials.isExpired())
             return Option.empty();                                                             //Si las credenciales hay caducado, regresar
         return getSession(credentials.getToken())                                                                       //Consigue la sesion almacenada
@@ -70,10 +81,10 @@ public class SessionCache {
                     boolean match = false;
                     try {
                         Mac sha256 = Mac.getInstance("HmacSHA256");                                                     //Conseguir instancia de SHA-264
-                        SecretKeySpec secret = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");//Convertir token privado a secret key
+                        SecretKeySpec secret = new SecretKeySpec(key.getBytes(), "HmacSHA256");                      //Convertir token privado a secret key
                         sha256.init(secret);                                                                            //Inicializar secret key
-                        byte[] bytes = sha256.doFinal(testHash.getBytes(StandardCharsets.UTF_8));                       //Convertir hash a bytes encriptados
-                        String hash = Base64.getEncoder().encodeToString(bytes);                                        //Convertir bytes encriptados a String
+                        byte[] bytes = Base64.getEncoder().encode(sha256.doFinal(testHash.getBytes()));                 //Convertir hash a bytes encriptados a String
+                        String hash = new String(bytes);
                         match = credentials.hashEquals(hash);                                                           //Verificar si los hash coinciden
                     } catch (Exception e) {
                         e.printStackTrace();

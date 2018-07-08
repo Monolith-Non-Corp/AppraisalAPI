@@ -30,7 +30,7 @@ public class EvaluacionRepository {
 
     @GetMapping("{organizacion}")
     public ResponseEntity<Status> validate(@PathVariable("organizacion") Integer organizacionIn,
-                                           @RequestHeader("Credentials") Credentials credentials) {
+                                           @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
                 .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
@@ -66,7 +66,7 @@ public class EvaluacionRepository {
 
     @GetMapping("missing/{organizacion}")
     public ResponseEntity<List<PracticaEspecificaImpl>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
-                                                                     @RequestHeader("Credentials") Credentials credentials) {
+                                                                     @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
                 .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {

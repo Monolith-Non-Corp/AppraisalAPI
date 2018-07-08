@@ -47,7 +47,7 @@ public class HipervinculoController {
     @PostMapping("{evidencia}")
     public ResponseEntity<HipervinculoImpl> add(@PathVariable("evidencia") Integer evidenciaIn,
                                                 @RequestBody String hipervinculo,
-                                                @RequestHeader("Credentials") Credentials credentials) {
+                                                @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> evidenciaRepository.findByUsuario(evidenciaIn, usuario))                                //Si es valido, buscar evidencia con el usuario
                 .map(evidencia -> {
@@ -67,7 +67,7 @@ public class HipervinculoController {
      */
     @DeleteMapping("{hipervinculo}")
     public ResponseEntity<HipervinculoImpl> remove(@PathVariable("hipervinculo") Integer hipervinculoIn,
-                                                   @RequestHeader("Credentials") Credentials credentials) {
+                                                   @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> hipervinculoRepository.findByUsuario(hipervinculoIn, usuario))                          //Si es valido, buscar hypervinculo con el usuario
                 .map(hipervinculo -> {
@@ -86,7 +86,7 @@ public class HipervinculoController {
      */
     @GetMapping("{evidencia}")
     public ResponseEntity<List<HipervinculoImpl>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
-                                                         @RequestHeader("Credentials") Credentials credentials) {
+                                                         @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> hipervinculoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                  //Si es valido, buscar hypervinculos con el usuario y la evidencia
                         .map(Impl::from)

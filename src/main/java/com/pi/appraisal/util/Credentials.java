@@ -30,7 +30,7 @@ public class Credentials {
     }
 
     public boolean hashEquals(String hash) {
-        return Objects.equals(this.hash, hash);
+        return this.hash.equals(hash);
     }
 
     public UUID getToken() {
