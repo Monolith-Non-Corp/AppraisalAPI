@@ -1,8 +1,6 @@
 package com.pi.appraisal.entity;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +12,7 @@ public class Usuario {
     private Persona persona;
     private String username;
     private String password;
-    private Set<Organizacion> organizacions = new HashSet<>(0);
+    private Organizacion organizacion;
 
     @Transient
     public UUID token;
@@ -36,13 +34,13 @@ public class Usuario {
         this.password = password;
     }
 
-    public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password, Set<Organizacion> organizacions) {
+    public Usuario(int id, UsuarioRol usuarioRol, Persona persona, String username, String password, Organizacion organizacion) {
         this.id = id;
         this.usuarioRol = usuarioRol;
         this.persona = persona;
         this.username = username;
         this.password = password;
-        this.organizacions = organizacions;
+        this.organizacion = organizacion;
     }
 
     @Id
@@ -94,13 +92,14 @@ public class Usuario {
         this.password = password;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
-    public Set<Organizacion> getOrganizacions() {
-        return this.organizacions;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organizacion")
+    public Organizacion getOrganizacion() {
+        return this.organizacion;
     }
 
-    public void setOrganizacions(Set<Organizacion> organizacions) {
-        this.organizacions = organizacions;
+    public void setOrganizacion(Organizacion organizacion) {
+        this.organizacion = organizacion;
     }
 
     public static class UsuarioImpl {

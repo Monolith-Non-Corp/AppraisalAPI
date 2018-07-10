@@ -2,10 +2,12 @@ package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
-import com.pi.appraisal.entity.*;
+import com.pi.appraisal.entity.Artefacto;
+import com.pi.appraisal.entity.Evidencia;
+import com.pi.appraisal.entity.Hipervinculo;
+import com.pi.appraisal.entity.Instancia;
 import com.pi.appraisal.entity.PracticaEspecifica.PracticaEspecificaImpl;
 import com.pi.appraisal.repository.OrganizacionRepository;
-import com.pi.appraisal.util.Credentials;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +34,7 @@ public class EvaluacionRepository {
     public ResponseEntity<Status> validate(@PathVariable("organizacion") Integer organizacionIn,
                                            @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
-                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
+                .map(usuario -> organizacionRepository.findByUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
                     Status status = null;
                     outerLoop:
@@ -68,7 +70,7 @@ public class EvaluacionRepository {
     public ResponseEntity<List<PracticaEspecificaImpl>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
                                                                      @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
-                .map(usuario -> organizacionRepository.findByIdAndUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
+                .map(usuario -> organizacionRepository.findByUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
                 .map(organizacion -> {
                     List<PracticaEspecificaImpl> list = new ArrayList<>();                                              //Crear lista de evidencias incompletas
                     organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {  //Por cada instancia

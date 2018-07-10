@@ -9,27 +9,33 @@ import java.util.Set;
 public class Organizacion {
 
     private int id;
-    private Usuario usuario;
     private Nivel nivel;
     private String nombre;
     private Set<Instancia> instancias = new HashSet<>(0);
+    private Set<Usuario> usuarios = new HashSet<>(0);
 
     public Organizacion() {
     }
 
-    public Organizacion(int id, Usuario usuario, Nivel nivel, String nombre) {
+    public Organizacion(int id, Nivel nivel, String nombre) {
         this.id = id;
-        this.usuario = usuario;
         this.nivel = nivel;
         this.nombre = nombre;
     }
 
-    public Organizacion(int id, Usuario usuario, Nivel nivel, String nombre, Set<Instancia> instancias) {
+    public Organizacion(int id, Nivel nivel, String nombre, Set<Instancia> instancias) {
         this.id = id;
-        this.usuario = usuario;
         this.nivel = nivel;
         this.nombre = nombre;
         this.instancias = instancias;
+    }
+
+    public Organizacion(int id, Nivel nivel, String nombre, Set<Instancia> instancias, Set<Usuario> usuarios) {
+        this.id = id;
+        this.nivel = nivel;
+        this.nombre = nombre;
+        this.instancias = instancias;
+        this.usuarios = usuarios;
     }
 
     @Id
@@ -41,16 +47,6 @@ public class Organizacion {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario", nullable = false)
-    public Usuario getUsuario() {
-        return this.usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -79,6 +75,15 @@ public class Organizacion {
 
     public void setInstancias(Set<Instancia> instancias) {
         this.instancias = instancias;
+    }
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+    public Set<Usuario> getUsuarios() {
+        return this.usuarios;
+    }
+
+    public void setUsuarios(Set<Usuario> usuarios) {
+        this.usuarios = usuarios;
     }
 
     public static class OrganizacionImpl {
