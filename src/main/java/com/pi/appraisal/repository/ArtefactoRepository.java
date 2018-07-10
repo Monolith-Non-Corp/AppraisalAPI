@@ -17,7 +17,8 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
             + " JOIN Evidencia e ON a.evidencia = e.id"
             + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id"
-            + " WHERE e.id = :evidencia AND o.usuario = :usuario AND a.id = :artefacto")
+            + " JOIN Usuario u ON u.organizacion = o.id"
+            + " WHERE e.id = :evidencia AND u = :usuario AND a.id = :artefacto")
     Artefacto findByUsuario(
             @Param("evidencia") Integer evidencia,
             @Param("artefacto") Integer artefacto,
@@ -28,17 +29,19 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
             + " JOIN Evidencia e ON a.evidencia = e.id"
             + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id"
-            + " WHERE a.id = :artefacto AND o.usuario = :usuario")
+            + " JOIN Usuario u ON u.organizacion = o.id"
+            + " WHERE a.id = :artefacto AND u = :usuario")
     Artefacto findByUsuario(
             @Param("artefacto") Integer artefacto,
             @Param("usuario") Usuario usuario
     );
 
     @Query("SELECT a FROM Artefacto a "
-            + " JOIN Evidencia e ON a.evidencia = e.id "
-            + " JOIN Instancia i ON e.instancia = i.id "
+            + " JOIN Evidencia e ON a.evidencia = e.id"
+            + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id "
-            + " WHERE e.id = :evidencia AND o.usuario = :usuario")
+            + " JOIN Usuario u ON u.organizacion = o.id"
+            + " WHERE e.id = :evidencia AND u = :usuario")
     List<Artefacto> findAllByUsuario(
             @Param("evidencia") Integer evidencia,
             @Param("usuario") Usuario usuario

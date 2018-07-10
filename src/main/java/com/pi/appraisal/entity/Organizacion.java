@@ -77,7 +77,7 @@ public class Organizacion {
         this.instancias = instancias;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "usuario")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organizacion")
     public Set<Usuario> getUsuarios() {
         return this.usuarios;
     }

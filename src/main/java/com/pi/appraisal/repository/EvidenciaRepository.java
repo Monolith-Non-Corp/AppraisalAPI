@@ -18,7 +18,8 @@ public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
     @Query("SELECT e FROM Evidencia e "
             + " JOIN Instancia i ON e.instancia = i.id "
             + " JOIN Organizacion o ON i.organizacion = o.id "
-            + " WHERE e.id = :evidencia AND o.usuario = :usuario")
+            + " JOIN Usuario u ON u.organizacion = o.id"
+            + " WHERE e.id = :evidencia AND u = :usuario")
     Evidencia findByUsuario(
             @Param("evidencia") Integer evidencia,
             @Param("usuario") Usuario usuario

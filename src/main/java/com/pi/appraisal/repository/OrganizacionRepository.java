@@ -11,7 +11,7 @@ public interface OrganizacionRepository extends Repository<Organizacion, Integer
 
     void delete(Organizacion organizacion);
 
-    @Query("SELECT o FROM Organizacion"
+    @Query("SELECT o FROM Organizacion o"
             + " JOIN Usuario u ON u.organizacion = o.id"
             + " WHERE o.id = :organizacion AND u = :usuario")
     Organizacion findByUsuario(

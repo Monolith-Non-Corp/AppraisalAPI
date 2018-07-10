@@ -13,7 +13,8 @@ public interface InstanciaRepository extends Repository<Instancia, Integer> {
 
     @Query("SELECT i FROM Instancia i"
             + " JOIN Organizacion o ON i.organizacion = o.id"
-            + " WHERE i.id = :instancia AND o.usuario = :usuario ")
+            + " JOIN Usuario u ON u.organizacion = o.id"
+            + " WHERE i.id = :instancia AND u = :usuario ")
     Instancia findByUsuario(
             @Param("instancia") Integer instancia,
             @Param("usuario") Usuario usuario
