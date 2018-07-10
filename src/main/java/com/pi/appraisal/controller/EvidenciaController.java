@@ -1,13 +1,14 @@
 package com.pi.appraisal.controller;
 
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Evidencia;
 import com.pi.appraisal.entity.Evidencia.EvidenciaImpl;
-import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.repository.AreaProcesoRepository;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.repository.InstanciaRepository;
 import com.pi.appraisal.util.Credentials;
+import com.pi.appraisal.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,13 +80,13 @@ public class EvidenciaController {
      * @return El mensaje de elminado si es aplicable
      */
     @DeleteMapping("{instancia}")
-    public ResponseEntity<String> delete(@PathVariable("instancia") Integer instanciaIn,
-                                         @RequestHeader("Credentials") String credentials) {
+    public ResponseEntity<Response> delete(@PathVariable("instancia") Integer instanciaIn,
+                                           @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
                 .map(instancia -> {
                     instancia.getEvidencias().forEach(evidenciaRepository::delete);                                     //Eliminar cada evidencia de la instancia
-                    return ResponseEntity.ok("Evidences deleted successfully");                                         //Enviar mensaje
+                    return Response.ok("Evidences deleted successfully");                                         //Enviar mensaje
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 
