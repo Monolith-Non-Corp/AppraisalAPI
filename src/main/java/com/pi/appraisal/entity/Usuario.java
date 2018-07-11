@@ -64,7 +64,7 @@ public class Usuario {
         this.usuarioRol = usuarioRol;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "persona", nullable = false)
     public Persona getPersona() {
         return this.persona;
@@ -92,7 +92,7 @@ public class Usuario {
         this.password = password;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "organizacion")
     public Organizacion getOrganizacion() {
         return this.organizacion;
@@ -105,9 +105,41 @@ public class Usuario {
     public static class UsuarioImpl {
         public int id;
         public String username;
+        public String password;
         public Persona.PersonaImpl persona;
-        public UsuarioRol.UsuarioRolImpl usuarioRol;
+        public Organizacion.OrganizacionImpl organizacion;
+    }
+
+    public static class SessionImpl {
+        public String username;
+        public SessionPersonaImpl persona;
+        public SessionRolImpl usuarioRol;
+        public Organizacion.OrganizacionImpl organizacion;
         public UUID token;
         public UUID key;
+
+        public static SessionRolImpl to(UsuarioRol usuarioRol) {
+            SessionRolImpl impl = new SessionRolImpl();
+            impl.descripcion = usuarioRol.getDescripcion();
+            return impl;
+        }
+
+        public static SessionPersonaImpl to(Persona persona) {
+            SessionPersonaImpl impl = new SessionPersonaImpl();
+            impl.nombre = persona.getNombre();
+            impl.primerApellido = persona.getPrimerApellido();
+            impl.segundoApellido = persona.getSegundoApellido();
+            return impl;
+        }
+
+        public static class SessionRolImpl {
+            public String descripcion;
+        }
+
+        public static class SessionPersonaImpl {
+            public String nombre;
+            public String primerApellido;
+            public String segundoApellido;
+        }
     }
 }

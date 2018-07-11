@@ -68,7 +68,7 @@ public class ArtefactoController {
                     artefacto.setNombre(file.getOriginalFilename());
                     artefacto.setTipo(file.getContentType());
                     artefacto.setEvidencia(evidencia);
-                    return ResponseEntity.ok(Impl.from(artefactoRepository.save(artefacto)));                           //Guardar artefacto
+                    return ResponseEntity.ok(Impl.to(artefactoRepository.save(artefacto)));                           //Guardar artefacto
                 }).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
     }
 
@@ -86,7 +86,7 @@ public class ArtefactoController {
                 .map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))                                //Si es valido, buscar el artefacto con el usuario
                 .map(artefacto -> {
                     artefactoRepository.delete(artefacto);                                                              //Eliminar aretfacto
-                    return ResponseEntity.ok(Impl.from(artefacto));                                                     //Enviar artefacto eliminado
+                    return ResponseEntity.ok(Impl.to(artefacto));                                                     //Enviar artefacto eliminado
                 }).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
     }
 
@@ -121,7 +121,7 @@ public class ArtefactoController {
                                                       @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                     //Si es valido, buscar artefactos con el usuario y la evidencia
-                        .map(Impl::from)
+                        .map(Impl::to)
                         .collect(Collectors.toList())
                 ).map(ResponseEntity::ok)                                                                               //Enviar artefactos
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                        //Si no es valido, enviar error

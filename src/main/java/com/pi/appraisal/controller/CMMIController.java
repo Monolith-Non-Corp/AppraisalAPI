@@ -50,7 +50,7 @@ public class CMMIController {
     @GetMapping("nivel/{lvl}")
     public ResponseEntity<NivelImpl> getNivel(@PathVariable("lvl") Integer lvl) {
         return nivelRepository.findByLvl(lvl)
-                .map(Impl::from)
+                .map(Impl::to)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -58,21 +58,21 @@ public class CMMIController {
     @GetMapping("area/{nivel}")
     public ResponseEntity<List<AreaProcesoImpl>> getAreaProcesos(@PathVariable("nivel") Integer nivel) {
         return ResponseEntity.ok(areaProcesoRepository.findAllByNivel(new Nivel(nivel)).stream()
-                .map(Impl::from)
+                .map(Impl::to)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("meta/{area}")
     public ResponseEntity<List<MetaEspecificaImpl>> getMetaEspecificas(@PathVariable("area") Integer area) {
         return ResponseEntity.ok(metaEspecificaRepository.findAllByAreaProceso(new AreaProceso(area)).stream()
-                .map(Impl::from)
+                .map(Impl::to)
                 .collect(Collectors.toList()));
     }
 
     @GetMapping("practica/{meta}")
     public ResponseEntity<List<PracticaEspecificaImpl>> getPracticaEspecificas(@PathVariable("meta") Integer meta) {
         return ResponseEntity.ok(practicaEspecificaRepository.findAllByMetaEspecifica(new MetaEspecifica(meta)).stream()
-                .map(Impl::from)
+                .map(Impl::to)
                 .collect(Collectors.toList()));
     }
 }

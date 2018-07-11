@@ -20,12 +20,12 @@ import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ADMINISTRADOR;
 
 @RestController
 @RequestMapping("api/evaluacion")
-public class EvaluacionRepository {
+public class EvaluacionController {
 
     private final OrganizacionRepository organizacionRepository;
     private final SessionCache session;
 
-    public EvaluacionRepository(OrganizacionRepository organizacionRepository, SessionCache session) {
+    public EvaluacionController(OrganizacionRepository organizacionRepository, SessionCache session) {
         this.organizacionRepository = organizacionRepository;
         this.session = session;
     }
@@ -75,7 +75,7 @@ public class EvaluacionRepository {
                     List<PracticaEspecificaImpl> list = new ArrayList<>();                                              //Crear lista de evidencias incompletas
                     organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {  //Por cada instancia
                         if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {            //Si no tiene evidencias
-                            list.add(Impl.from(evidencia.getPracticaEspecifica()));
+                            list.add(Impl.to(evidencia.getPracticaEspecifica()));
                         }
                     }));
                     return ResponseEntity.ok(list);                                                                     //Regresar lista

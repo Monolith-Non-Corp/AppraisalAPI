@@ -54,7 +54,7 @@ public class HipervinculoController {
                     Hipervinculo h = new Hipervinculo();                                                                //Crear hypervinculo
                     h.setLink(hipervinculo);
                     h.setEvidencia(evidencia);                                                                          //Asignar evidencia
-                    return ResponseEntity.ok(Impl.from(hipervinculoRepository.save(h)));                                //Enviar hypervinculo
+                    return ResponseEntity.ok(Impl.to(hipervinculoRepository.save(h)));                                //Enviar hypervinculo
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 
@@ -72,7 +72,7 @@ public class HipervinculoController {
                 .map(usuario -> hipervinculoRepository.findByUsuario(hipervinculoIn, usuario))                          //Si es valido, buscar hypervinculo con el usuario
                 .map(hipervinculo -> {
                     hipervinculoRepository.delete(hipervinculo);                                                        //Eliminar hypervinculo
-                    return ResponseEntity.ok(Impl.from(hipervinculo));                                                  //Enviar hypervinculo eliminado
+                    return ResponseEntity.ok(Impl.to(hipervinculo));                                                  //Enviar hypervinculo eliminado
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 
@@ -89,7 +89,7 @@ public class HipervinculoController {
                                                          @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> hipervinculoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                  //Si es valido, buscar hypervinculos con el usuario y la evidencia
-                        .map(Impl::from)
+                        .map(Impl::to)
                         .collect(Collectors.toList())
                 ).map(ResponseEntity::ok)                                                                               //Enviar hypervinculos
                 .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                           //Si no es valido, enviar error

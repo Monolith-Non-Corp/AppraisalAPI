@@ -62,6 +62,22 @@ public class SessionCache {
     }
 
     /**
+     * Termina las sesiones con el usuario {@param userId}
+     *
+     * @param userId El {@link Usuario} de la sesion
+     */
+    public void remove(final int userId) {
+        for (UUID uuid : cacheMap.keySet()) {
+            cacheMap.compute(uuid, (i, s) -> {
+                if(s == null || s.userId == userId) {
+                    return null;
+                }
+                return s;
+            });
+        }
+    }
+
+    /**
      * Verifica que las {@param credentials} sean validas y que el usuario tenga el nivel de autorizacion indicado
      *
      * @param json Las {@link Credentials} de la sesion

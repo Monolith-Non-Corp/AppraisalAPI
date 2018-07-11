@@ -64,7 +64,7 @@ public class EvidenciaController {
                                     Evidencia evidencia = new Evidencia();                                              //Crear evidencia
                                     evidencia.setInstancia(instancia);                                                  //Asignar instancia
                                     evidencia.setPracticaEspecifica(practica);                                          //Asignar practica
-                                    evidencias.add(Impl.from(evidenciaRepository.save(evidencia)));                     //Añadir evidencia a la lista
+                                    evidencias.add(Impl.to(evidenciaRepository.save(evidencia)));                     //Añadir evidencia a la lista
                                 });
                             });
                             return ResponseEntity.ok(evidencias);                                                       //Enviar evidencias
@@ -107,7 +107,7 @@ public class EvidenciaController {
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
                 .map(instancia -> areaProcesoRepository.findById(areaIn)                                                //Si existe, buscar la area especificada
                         .map(area -> evidenciaRepository.findAllByArea(area, instancia).stream()                        //Buscar evidencias por area e instancia
-                                .map(Impl::from)
+                                .map(Impl::to)
                                 .collect(Collectors.toList())
                         ).map(ResponseEntity::ok)                                                                       //Enviar evidencias
                         .orElse(ResponseEntity.notFound().build())                                                      //Si no existe, enviar error
