@@ -4,6 +4,7 @@ import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
+import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
 import com.pi.appraisal.repository.NivelRepository;
 import com.pi.appraisal.repository.UsuarioRepository;
 import com.pi.appraisal.repository.UsuarioRolRepository;
@@ -42,8 +43,15 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<List<UsuarioImpl>> getAll(@RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)
-                .pipe(() -> ResponseEntity.ok(usuarioRepository.findAll().stream().map(Impl::to).collect(Collectors.toList())))
-                .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+                .pipe(() -> ResponseEntity.ok(usuarioRepository
+                        .findAllByUsuarioRolIsNotLike(usuarioRolRepository.getAdministrador())
+                        .stream().map(Impl::to).collect(Collectors.toList()))
+                ).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    @GetMapping("roles")
+    public ResponseEntity<List<UsuarioRolImpl>> getAllRoles() {
+        return ResponseEntity.ok(usuarioRolRepository.findAll().stream().map(Impl::to).collect(Collectors.toList()));
     }
 
     @PostMapping

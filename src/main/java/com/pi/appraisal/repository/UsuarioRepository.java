@@ -1,6 +1,7 @@
 package com.pi.appraisal.repository;
 
 import com.pi.appraisal.entity.Usuario;
+import com.pi.appraisal.entity.UsuarioRol;
 import org.springframework.data.domain.Example;
 import org.springframework.data.repository.Repository;
 
@@ -16,7 +17,7 @@ public interface UsuarioRepository extends Repository<Usuario, Integer> {
 
     Optional<Usuario> findById(Integer id);
 
-    List<Usuario> findAll();
+    List<Usuario> findAllByUsuarioRolIsNotLike(UsuarioRol usuarioRol);
 
     boolean exists(Example<Usuario> example);
 }

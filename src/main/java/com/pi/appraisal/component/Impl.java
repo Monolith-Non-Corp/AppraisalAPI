@@ -13,6 +13,7 @@ import com.pi.appraisal.entity.Persona.PersonaImpl;
 import com.pi.appraisal.entity.PracticaEspecifica.PracticaEspecificaImpl;
 import com.pi.appraisal.entity.Usuario.SessionImpl;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
+import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
 
 import java.util.stream.Collectors;
 
@@ -90,6 +91,13 @@ public final class Impl {
         impl.id = organizacion.getId();
         impl.nombre = organizacion.getNombre();
         impl.nivel = Impl.to(organizacion.getNivel());
+        return impl;
+    }
+
+    public static UsuarioRolImpl to(UsuarioRol usuarioRol) {
+        UsuarioRolImpl impl = new UsuarioRolImpl();
+        impl.id = usuarioRol.getId();
+        impl.descripcion = usuarioRol.getDescripcion();
         return impl;
     }
 

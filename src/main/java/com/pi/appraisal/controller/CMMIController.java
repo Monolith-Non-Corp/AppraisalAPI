@@ -47,6 +47,11 @@ public class CMMIController {
         this.practicaEspecificaRepository = practicaEspecificaRepository;
     }
 
+    @GetMapping("nivel")
+    public ResponseEntity<List<NivelImpl>> getAllNivel() {
+        return ResponseEntity.ok(nivelRepository.findAll().stream().map(Impl::to).collect(Collectors.toList()));
+    }
+
     @GetMapping("nivel/{lvl}")
     public ResponseEntity<NivelImpl> getNivel(@PathVariable("lvl") Integer lvl) {
         return nivelRepository.findByLvl(lvl)
