@@ -83,7 +83,7 @@ public class UsuarioController {
                     nivelRepository.findByLvl(usuarioIn.organizacion.nivel.lvl).ifPresent(nivel -> {
                         usuario.getOrganizacion().setNivel(nivel);
                     });
-                    return ResponseEntity.ok(Impl.to(usuario));
+                    return ResponseEntity.ok(Impl.to(usuarioRepository.save(usuario)));
                 }).orElse(ResponseEntity.notFound().build()))
                 .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }

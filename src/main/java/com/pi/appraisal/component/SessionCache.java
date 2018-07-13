@@ -6,10 +6,10 @@ import com.pi.appraisal.util.Credentials;
 import com.pi.appraisal.util.Option;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -152,12 +152,13 @@ public class SessionCache {
          * @param usuario Un {@link Usuario}
          * @return Una {@link Session} de usuario
          */
+        @Transactional
         private static Session of(Usuario usuario) {
             UUID token = UUID.randomUUID();                                                                             //Crea el token publico
             UUID key = UUID.randomUUID();                                                                               //Crea el token privado
             usuario.key = key;                                                                                          //Asigna el token privado al usuario
             usuario.token = token;                                                                                      //Asigna el token publico al usuario
-            return new Session(key, token, usuario.getId(), new Date(), Priviledge.from(usuario.getUsuarioRol()));      //Crea una nueva sesion
+            return new Session(key, token, usuario.getId(), new Date(), Priviledge.from(usuario));      //Crea una nueva sesion
         }
     }
 }

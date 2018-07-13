@@ -33,7 +33,7 @@ public class Nivel {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "lvl", unique = true, nullable = false)
     public int getLvl() {
         return this.lvl;

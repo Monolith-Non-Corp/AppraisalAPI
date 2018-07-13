@@ -29,7 +29,7 @@ public class UsuarioRol {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
     public int getId() {
         return this.id;
@@ -61,8 +61,8 @@ public class UsuarioRol {
     public enum Priviledge {
         ORGANIZACION, ADMINISTRADOR, ANY;
 
-        public static Priviledge from(UsuarioRol rol) {
-            switch (rol.id) {
+        public static Priviledge from(Usuario usuario) {
+            switch (usuario.getUsuarioRol().getId()) {
                 case 1:
                     return ORGANIZACION;
                 case 2:
