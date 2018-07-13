@@ -84,7 +84,7 @@ public class SessionCache {
      * @param priviledge  El {@link Priviledge} requerido
      * @return Un {@link Option} con el {@link Usuario} al que pertenece la sesion
      */
-    public Option<Usuario> authenticate(String json, Priviledge priviledge) {
+    public Option<Integer> authenticate(String json, Priviledge priviledge) {
         Credentials credentials = converter.convert(json);
         if (credentials.isExpired())
             return Option.empty();                                                             //Si las credenciales hay caducado, regresar
@@ -105,7 +105,7 @@ public class SessionCache {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    return match ? new Usuario(session.userId) : null;                                                  //Si los hash coinciden, retorna el usuario con su id o nulo
+                    return match ? session.userId : null;                                                               //Si los hash coinciden, retorna el usuario con su id o nulo
                 });
     }
 

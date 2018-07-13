@@ -18,11 +18,11 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
             + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id"
             + " JOIN Usuario u ON u.organizacion = o.id"
-            + " WHERE e.id = :evidencia AND u = :usuario AND a.id = :artefacto")
+            + " WHERE e.id = :evidencia AND u.id = :usuario AND a.id = :artefacto")
     Artefacto findByUsuario(
             @Param("evidencia") Integer evidencia,
             @Param("artefacto") Integer artefacto,
-            @Param("usuario") Usuario usuario
+            @Param("usuario") Integer usuario
     );
 
     @Query("SELECT a FROM Artefacto a"
@@ -30,10 +30,10 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
             + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id"
             + " JOIN Usuario u ON u.organizacion = o.id"
-            + " WHERE a.id = :artefacto AND u = :usuario")
+            + " WHERE a.id = :artefacto AND u.id = :usuario")
     Artefacto findByUsuario(
             @Param("artefacto") Integer artefacto,
-            @Param("usuario") Usuario usuario
+            @Param("usuario") Integer usuario
     );
 
     @Query("SELECT a FROM Artefacto a "
@@ -41,9 +41,9 @@ public interface ArtefactoRepository extends Repository<Artefacto, Integer> {
             + " JOIN Instancia i ON e.instancia = i.id"
             + " JOIN Organizacion o ON i.organizacion = o.id "
             + " JOIN Usuario u ON u.organizacion = o.id"
-            + " WHERE e.id = :evidencia AND u = :usuario")
+            + " WHERE e.id = :evidencia AND u.id = :usuario")
     List<Artefacto> findAllByUsuario(
             @Param("evidencia") Integer evidencia,
-            @Param("usuario") Usuario usuario
+            @Param("usuario") Integer usuario
     );
 }

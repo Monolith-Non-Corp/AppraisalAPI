@@ -60,7 +60,7 @@ public class Evidencia {
         this.practicaEspecifica = practicaEspecifica;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evidencia")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evidencia", cascade = CascadeType.ALL)
     public Set<Artefacto> getArtefactos() {
         return this.artefactos;
     }
@@ -69,7 +69,7 @@ public class Evidencia {
         this.artefactos = artefactos;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evidencia")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "evidencia", cascade = CascadeType.ALL)
     public Set<Hipervinculo> getHipervinculos() {
         return this.hipervinculos;
     }

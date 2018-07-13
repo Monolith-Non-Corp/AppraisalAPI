@@ -56,7 +56,7 @@ public class InstanciaTipo {
     }
 
     public static class InstanciaTipoImpl {
-        private int id;
-        private String descripcion;
+        public int id;
+        public String descripcion;
     }
 }

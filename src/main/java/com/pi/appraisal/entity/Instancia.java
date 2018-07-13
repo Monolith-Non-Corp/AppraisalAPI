@@ -2,6 +2,7 @@ package com.pi.appraisal.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -71,7 +72,7 @@ public class Instancia {
         this.nombre = nombre;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instancia")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "instancia", cascade = CascadeType.ALL)
     public Set<Evidencia> getEvidencias() {
         return this.evidencias;
     }
@@ -82,7 +83,8 @@ public class Instancia {
 
     public static class InstanciaImpl {
         public int id;
-        public InstanciaTipo.InstanciaTipoImpl instanciaTipo;
         public String nombre;
+        public InstanciaTipo.InstanciaTipoImpl instanciaTipo;
+        public List<AreaProceso.AreaProcesoImpl> areaProcesos;
     }
 }

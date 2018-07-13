@@ -6,6 +6,8 @@ import com.pi.appraisal.entity.Artefacto.ArtefactoImpl;
 import com.pi.appraisal.entity.Categoria.CategoriaImpl;
 import com.pi.appraisal.entity.Evidencia.EvidenciaImpl;
 import com.pi.appraisal.entity.Hipervinculo.HipervinculoImpl;
+import com.pi.appraisal.entity.Instancia.InstanciaImpl;
+import com.pi.appraisal.entity.InstanciaTipo.InstanciaTipoImpl;
 import com.pi.appraisal.entity.MetaEspecifica.MetaEspecificaImpl;
 import com.pi.appraisal.entity.Nivel.NivelImpl;
 import com.pi.appraisal.entity.Organizacion.OrganizacionImpl;
@@ -15,6 +17,10 @@ import com.pi.appraisal.entity.Usuario.SessionImpl;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class Impl {
@@ -120,12 +126,32 @@ public final class Impl {
         return impl;
     }
 
+    public static InstanciaTipoImpl to(InstanciaTipo instanciaTipo) {
+        InstanciaTipoImpl impl = new InstanciaTipoImpl();
+        impl.id = instanciaTipo.getId();
+        impl.descripcion = instanciaTipo.getDescripcion();
+        return impl;
+    }
+
+    public static InstanciaImpl to(Instancia instancia) {
+        InstanciaImpl impl = new InstanciaImpl();
+        impl.id = instancia.getId();
+        impl.nombre = instancia.getNombre();
+        impl.instanciaTipo = Impl.to(instancia.getInstanciaTipo());
+        Set<AreaProcesoImpl> areaProcesos = new HashSet<>();
+        instancia.getEvidencias().forEach(evidencia -> {
+            areaProcesos.add(Impl.to(evidencia.getPracticaEspecifica().getMetaEspecifica().getAreaProceso()));
+        });
+        impl.areaProcesos = new ArrayList<>(areaProcesos);
+        return impl;
+    }
+
     public static SessionImpl sessionOf(Usuario usuario) {
         SessionImpl impl = new SessionImpl();
         impl.username = usuario.getUsername();
         impl.usuarioRol = SessionImpl.to(usuario.getUsuarioRol());
         impl.persona = SessionImpl.to(usuario.getPersona());
-        if(usuario.getOrganizacion() != null)
+        if (usuario.getOrganizacion() != null)
             impl.organizacion = Impl.to(usuario.getOrganizacion());
         impl.key = usuario.key;
         impl.token = usuario.token;
@@ -164,5 +190,12 @@ public final class Impl {
         nivel.setLvl(impl.lvl);
         nivel.setDescripcion(impl.descripcion);
         return nivel;
+    }
+
+    public static Instancia from(InstanciaImpl impl) {
+        Instancia instancia = new Instancia();
+        instancia.setId(impl.id);
+        instancia.setNombre(impl.nombre);
+        return instancia;
     }
 }

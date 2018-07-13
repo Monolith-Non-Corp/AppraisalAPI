@@ -68,7 +68,7 @@ public class Organizacion {
         this.nombre = nombre;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organizacion")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "organizacion", cascade = CascadeType.ALL)
     public Set<Instancia> getInstancias() {
         return this.instancias;
     }

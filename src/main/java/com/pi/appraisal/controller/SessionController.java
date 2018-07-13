@@ -83,7 +83,7 @@ public class SessionController {
     public ResponseEntity<Response> validate(@RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
                 .map(usuario -> {
-                    boolean valid = usuarioRepository.exists(Example.of(usuario));                                      //Valida si el usuario existe
+                    boolean valid = usuarioRepository.exists(Example.of(new Usuario(usuario)));                        //Valida si el usuario existe
                     if (valid) {
                         return Response.ok("Session is active");                                                  //Si existe, la sesion se mantiene
                     } else {

@@ -5,9 +5,7 @@ import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
-import com.pi.appraisal.repository.NivelRepository;
-import com.pi.appraisal.repository.UsuarioRepository;
-import com.pi.appraisal.repository.UsuarioRolRepository;
+import com.pi.appraisal.repository.*;
 import com.pi.appraisal.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +24,8 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioRolRepository usuarioRolRepository;
     private final NivelRepository nivelRepository;
+    private final InstanciaRepository instanciaRepository;
+    private final EvidenciaRepository evidenciaRepository;
     private final SessionCache session;
 
     @Autowired
@@ -33,10 +33,12 @@ public class UsuarioController {
             UsuarioRepository usuarioRepository,
             UsuarioRolRepository usuarioRolRepository,
             NivelRepository nivelRepository,
-            SessionCache session) {
+            InstanciaRepository instanciaRepository, EvidenciaRepository evidenciaRepository, SessionCache session) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioRolRepository = usuarioRolRepository;
         this.nivelRepository = nivelRepository;
+        this.instanciaRepository = instanciaRepository;
+        this.evidenciaRepository = evidenciaRepository;
         this.session = session;
     }
 
@@ -80,6 +82,18 @@ public class UsuarioController {
                     usuario.getPersona().setPrimerApellido(usuarioIn.persona.primerApellido);
                     usuario.getPersona().setSegundoApellido(usuarioIn.persona.segundoApellido);
                     usuario.getOrganizacion().setNombre(usuarioIn.organizacion.nombre);
+                    int lastLvl = usuario.getOrganizacion().getNivel().getLvl();
+                    int newLvl = usuarioIn.organizacion.nivel.lvl;
+                    for (int lvl = lastLvl; lvl > newLvl; lvl--) {
+                        nivelRepository.findByLvl(lvl).ifPresent(nivel -> {
+                            nivel.getAreaProcesos().forEach(areaProceso -> {
+                                instanciaRepository.findAllByOrganizacion(usuario.getOrganizacion()).forEach(instancia -> {
+                                    evidenciaRepository.findAllByArea(areaProceso.getId(), instancia.getId())
+                                            .forEach(evidenciaRepository::delete);
+                                });
+                            });
+                        });
+                    }
                     nivelRepository.findByLvl(usuarioIn.organizacion.nivel.lvl).ifPresent(nivel -> {
                         usuario.getOrganizacion().setNivel(nivel);
                     });
