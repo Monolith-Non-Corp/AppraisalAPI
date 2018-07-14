@@ -18,9 +18,6 @@ import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class Impl {
@@ -138,11 +135,11 @@ public final class Impl {
         impl.id = instancia.getId();
         impl.nombre = instancia.getNombre();
         impl.instanciaTipo = Impl.to(instancia.getInstanciaTipo());
-        Set<AreaProcesoImpl> areaProcesos = new HashSet<>();
+        impl.areaProcesos = new ArrayList<>();
         instancia.getEvidencias().forEach(evidencia -> {
-            areaProcesos.add(Impl.to(evidencia.getPracticaEspecifica().getMetaEspecifica().getAreaProceso()));
+            AreaProcesoImpl areaProceso = Impl.to(evidencia.getPracticaEspecifica().getMetaEspecifica().getAreaProceso());
+            if (impl.areaProcesos.stream().noneMatch(a -> a.id == areaProceso.id)) impl.areaProcesos.add(areaProceso);
         });
-        impl.areaProcesos = new ArrayList<>(areaProcesos);
         return impl;
     }
 

@@ -70,31 +70,32 @@ public class InstanciaController {
      * @param credentials Las {@link Credentials} de la sesion
      * @return La lista de {@link com.pi.appraisal.entity.Evidencia} creadas si es aplicable
      */
-    @PostMapping
+    @PostMapping("{organizacion}")
     public ResponseEntity<InstanciaImpl> create(@RequestBody InstanciaImpl instanciaIn,
-                                                @RequestParam("org") Integer orgIn,
+                                                @PathVariable("organizacion") Integer organizacionIn,
                                                 @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
                 .pipe(() ->
-                    organizacionRepository.findById(orgIn).map(organizacion ->                                          //Si existe, buscar la organizacion
+                    organizacionRepository.findById(organizacionIn).map(organizacion ->                                 //Si existe, buscar la organizacion
                         instanciaTipoRepository.findById(instanciaIn.instanciaTipo.id).map(instanciaTipo -> {           //Si existe, buscar la instanciaTipo
                             Instancia instancia = Impl.from(instanciaIn);                                               //Crear instancia
                             instancia.setOrganizacion(organizacion);                                                    //Asignar organizacion
                             instancia.setInstanciaTipo(instanciaTipo);                                                  //Asignar instanciaTipo
                             Instancia ins = instanciaRepository.save(instancia);                                        //Registrar
                             instanciaIn.areaProcesos.forEach(areaIn -> {
-                                areaProcesoRepository.findById(areaIn.id).ifPresent(areaProceso -> {                                 //Si existe, buscar la areaProceso
-                                    areaProceso.getMetaEspecificas().forEach(metaEspecifica -> {                            //Buscar metas de la area especificada
-                                        metaEspecifica.getPracticaEspecificas().forEach(practicaEspecifica -> {             //Buscar practicas de la meta
-                                            Evidencia evidencia = new Evidencia();                                          //Crear evidencia
-                                            evidencia.setInstancia(ins);                                                    //Asignar instancia
-                                            evidencia.setPracticaEspecifica(practicaEspecifica);                            //Asignar practica
-                                            evidenciaRepository.save(evidencia);                                            //Registrar
+                                areaProcesoRepository.findById(areaIn.id).ifPresent(areaProceso -> {                    //Si existe, buscar la areaProceso
+                                    areaProceso.getMetaEspecificas().forEach(metaEspecifica -> {                        //Buscar metas de la area especificada
+                                        metaEspecifica.getPracticaEspecificas().forEach(practicaEspecifica -> {         //Buscar practicas de la meta
+                                            Evidencia evidencia = new Evidencia();                                      //Crear evidencia
+                                            evidencia.setInstancia(ins);                                                //Asignar instancia
+                                            evidencia.setPracticaEspecifica(practicaEspecifica);                        //Asignar practica
+                                            evidenciaRepository.save(evidencia);                                        //Registrar
                                         });
                                     });
                                 });
                             });
-                            return ResponseEntity.ok(Impl.to(ins));                                                          //Enviar instancia
+                            return instanciaRepository.findById(ins.getId()).map(Impl::to).map(ResponseEntity::ok)
+                                    .orElse(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());           //Enviar instancia
                         }).orElse(ResponseEntity.notFound().build())                                                    //Si no existe, enviar error
                     ).orElse(ResponseEntity.notFound().build())                                                         //Si no existe, enviar error
                 ).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                          //Si no es valido, enviar error
