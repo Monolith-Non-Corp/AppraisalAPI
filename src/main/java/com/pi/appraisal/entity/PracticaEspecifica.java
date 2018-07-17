@@ -2,6 +2,7 @@ package com.pi.appraisal.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -78,6 +79,22 @@ public class PracticaEspecifica {
 
     public void setEvidencias(Set<Evidencia> evidencias) {
         this.evidencias = evidencias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PracticaEspecifica that = (PracticaEspecifica) o;
+        return id == that.id &&
+                Objects.equals(nombre, that.nombre) &&
+                Objects.equals(descripcion, that.descripcion);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, nombre, descripcion);
     }
 
     public static class PracticaEspecificaImpl {

@@ -6,6 +6,7 @@ import com.pi.appraisal.entity.Evidencia;
 import com.pi.appraisal.entity.Instancia;
 import com.pi.appraisal.entity.Instancia.InstanciaImpl;
 import com.pi.appraisal.entity.InstanciaTipo.InstanciaTipoImpl;
+import com.pi.appraisal.entity.PracticaEspecifica;
 import com.pi.appraisal.repository.*;
 import com.pi.appraisal.util.Credentials;
 import com.pi.appraisal.util.Response;
@@ -14,7 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ADMINISTRADOR;
@@ -81,24 +85,67 @@ public class InstanciaController {
                             Instancia instancia = Impl.from(instanciaIn);                                               //Crear instancia
                             instancia.setOrganizacion(organizacion);                                                    //Asignar organizacion
                             instancia.setInstanciaTipo(instanciaTipo);                                                  //Asignar instanciaTipo
-                            Instancia ins = instanciaRepository.save(instancia);                                        //Registrar
+                            Set<Evidencia> evidencias = new HashSet<>();
                             instanciaIn.areaProcesos.forEach(areaIn -> {
                                 areaProcesoRepository.findById(areaIn.id).ifPresent(areaProceso -> {                    //Si existe, buscar la areaProceso
                                     areaProceso.getMetaEspecificas().forEach(metaEspecifica -> {                        //Buscar metas de la area especificada
                                         metaEspecifica.getPracticaEspecificas().forEach(practicaEspecifica -> {         //Buscar practicas de la meta
                                             Evidencia evidencia = new Evidencia();                                      //Crear evidencia
-                                            evidencia.setInstancia(ins);                                                //Asignar instancia
+                                            evidencia.setInstancia(instancia);                                                //Asignar instancia
                                             evidencia.setPracticaEspecifica(practicaEspecifica);                        //Asignar practica
-                                            evidenciaRepository.save(evidencia);                                        //Registrar
+                                            evidencias.add(evidencia);
                                         });
                                     });
                                 });
                             });
-                            return instanciaRepository.findById(ins.getId()).map(Impl::to).map(ResponseEntity::ok)
-                                    .orElse(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());           //Enviar instancia
+                            instancia.setEvidencias(evidencias);
+                            return ResponseEntity.ok(Impl.to(instanciaRepository.save(instancia)));                                                     //Enviar instancia
                         }).orElse(ResponseEntity.notFound().build())                                                    //Si no existe, enviar error
                     ).orElse(ResponseEntity.notFound().build())                                                         //Si no existe, enviar error
                 ).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                          //Si no es valido, enviar error
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<InstanciaImpl> update(@PathVariable("id") Integer id,
+                                                @RequestBody InstanciaImpl instanciaIn,
+                                                @RequestHeader("Credentials") String credentials) {
+        return session.authenticate(credentials, ADMINISTRADOR)
+                .pipe(() ->
+                        instanciaRepository.findById(id).map(instancia -> {
+                            instancia.setNombre(instanciaIn.nombre);
+                            Set<PracticaEspecifica> practicas = new HashSet<>();
+                            Set<Evidencia> evidencias = instancia.getEvidencias();
+                            instanciaIn.areaProcesos.forEach(areaIn -> {
+                                areaProcesoRepository.findById(areaIn.id).ifPresent(areaProceso -> {
+                                    areaProceso.getMetaEspecificas().forEach(meta -> {
+                                        practicas.addAll(meta.getPracticaEspecificas());
+                                    });
+                                });
+                            });
+
+
+                            //FIXME: Deleting and Creating Evidencias
+                            Iterator<Evidencia> iterator = evidencias.iterator();
+                            while (iterator.hasNext()) {
+                                final int practica = iterator.next().getPracticaEspecifica().getId();
+                                if (practicas.stream().noneMatch(p -> p.getId() == practica)) {
+                                    iterator.remove();
+                                } else practicas.removeIf(p -> p.getId() == practica);
+                            }
+                            practicas.forEach(practica -> {
+                                Evidencia evidencia = new Evidencia();
+                                evidencia.setInstancia(instancia);
+                                evidencia.setPracticaEspecifica(practica);
+                                evidencias.add(evidencia);
+                            });
+
+
+                            instancia.setEvidencias(evidencias);
+                            instanciaTipoRepository.findById(instanciaIn.instanciaTipo.id)
+                                    .ifPresent(instancia::setInstanciaTipo);
+                            return ResponseEntity.ok(Impl.to(instanciaRepository.save(instancia)));
+                        }).orElse(ResponseEntity.notFound().build())
+                ).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
     @DeleteMapping("{id}")
@@ -106,8 +153,8 @@ public class InstanciaController {
                                            @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)
                 .pipe(() -> instanciaRepository.findById(id).map(instancia -> {
-                            instanciaRepository.delete(instancia);
-                            return Response.ok("Deleted Successfully");
+                    instanciaRepository.delete(instancia);
+                    return Response.ok("Deleted Successfully");
                 }).orElse(ResponseEntity.notFound().build()))
                 .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }

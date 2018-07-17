@@ -2,6 +2,7 @@ package com.pi.appraisal.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -102,5 +103,21 @@ public class AreaProceso {
         public String nombre;
         public String descripcion;
         public Categoria.CategoriaImpl categoria;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            AreaProcesoImpl that = (AreaProcesoImpl) o;
+            return id == that.id &&
+                    Objects.equals(nombre, that.nombre) &&
+                    Objects.equals(descripcion, that.descripcion) &&
+                    Objects.equals(categoria, that.categoria);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(id, nombre, descripcion, categoria);
+        }
     }
 }

@@ -24,7 +24,6 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioRolRepository usuarioRolRepository;
     private final NivelRepository nivelRepository;
-    private final InstanciaRepository instanciaRepository;
     private final EvidenciaRepository evidenciaRepository;
     private final SessionCache session;
 
@@ -33,11 +32,11 @@ public class UsuarioController {
             UsuarioRepository usuarioRepository,
             UsuarioRolRepository usuarioRolRepository,
             NivelRepository nivelRepository,
-            InstanciaRepository instanciaRepository, EvidenciaRepository evidenciaRepository, SessionCache session) {
+            EvidenciaRepository evidenciaRepository,
+            SessionCache session) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioRolRepository = usuarioRolRepository;
         this.nivelRepository = nivelRepository;
-        this.instanciaRepository = instanciaRepository;
         this.evidenciaRepository = evidenciaRepository;
         this.session = session;
     }
@@ -87,9 +86,8 @@ public class UsuarioController {
                     for (int lvl = lastLvl; lvl > newLvl; lvl--) {
                         nivelRepository.findByLvl(lvl).ifPresent(nivel -> {
                             nivel.getAreaProcesos().forEach(areaProceso -> {
-                                instanciaRepository.findAllByOrganizacion(usuario.getOrganizacion()).forEach(instancia -> {
-                                    evidenciaRepository.findAllByArea(areaProceso.getId(), instancia.getId())
-                                            .forEach(evidenciaRepository::delete);
+                                usuario.getOrganizacion().getInstancias().forEach(instancia -> {
+                                    evidenciaRepository.deleteInBatch(evidenciaRepository.findAllByArea(areaProceso.getId(), instancia.getId()));
                                 });
                             });
                         });

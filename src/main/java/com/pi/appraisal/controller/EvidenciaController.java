@@ -52,7 +52,7 @@ public class EvidenciaController {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> instanciaRepository.findByUsuario(instanciaIn, usuario))                                //Si es valido, buscar instancia con el usuario
                 .map(instancia -> {
-                    instancia.getEvidencias().forEach(evidenciaRepository::delete);                                     //Eliminar cada evidencia de la instancia
+                    evidenciaRepository.deleteInBatch(instancia.getEvidencias());
                     return Response.ok("Evidences deleted successfully");                                         //Enviar mensaje
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }

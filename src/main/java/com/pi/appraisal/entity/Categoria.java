@@ -2,6 +2,7 @@ package com.pi.appraisal.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -57,5 +58,20 @@ public class Categoria {
     public static class CategoriaImpl {
         public int id;
         public String nombre;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CategoriaImpl categoria = (CategoriaImpl) o;
+            return id == categoria.id &&
+                    Objects.equals(nombre, categoria.nombre);
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(id, nombre);
+        }
     }
 }

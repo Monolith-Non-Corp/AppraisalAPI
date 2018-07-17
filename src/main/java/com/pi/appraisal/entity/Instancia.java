@@ -2,7 +2,6 @@ package com.pi.appraisal.entity;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -85,6 +84,6 @@ public class Instancia {
         public int id;
         public String nombre;
         public InstanciaTipo.InstanciaTipoImpl instanciaTipo;
-        public List<AreaProceso.AreaProcesoImpl> areaProcesos;
+        public Set<AreaProceso.AreaProcesoImpl> areaProcesos;
     }
 }

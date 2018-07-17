@@ -17,7 +17,7 @@ import com.pi.appraisal.entity.Usuario.SessionImpl;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
 import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 public final class Impl {
@@ -135,10 +135,9 @@ public final class Impl {
         impl.id = instancia.getId();
         impl.nombre = instancia.getNombre();
         impl.instanciaTipo = Impl.to(instancia.getInstanciaTipo());
-        impl.areaProcesos = new ArrayList<>();
+        impl.areaProcesos = new HashSet<>();
         instancia.getEvidencias().forEach(evidencia -> {
-            AreaProcesoImpl areaProceso = Impl.to(evidencia.getPracticaEspecifica().getMetaEspecifica().getAreaProceso());
-            if (impl.areaProcesos.stream().noneMatch(a -> a.id == areaProceso.id)) impl.areaProcesos.add(areaProceso);
+            impl.areaProcesos.add(Impl.to(evidencia.getPracticaEspecifica().getMetaEspecifica().getAreaProceso()));
         });
         return impl;
     }

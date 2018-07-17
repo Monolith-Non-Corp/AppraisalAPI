@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
-    Evidencia save(Evidencia evidencia);
+    void deleteInBatch(Iterable<Evidencia> entities);
 
     void delete(Evidencia evidencia);
 
