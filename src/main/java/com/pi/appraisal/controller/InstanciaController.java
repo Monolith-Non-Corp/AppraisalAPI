@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ADMINISTRADOR;
@@ -123,15 +120,15 @@ public class InstanciaController {
                                 });
                             });
 
-
-                            //FIXME: Deleting and Creating Evidencias
-                            Iterator<Evidencia> iterator = evidencias.iterator();
-                            while (iterator.hasNext()) {
-                                final int practica = iterator.next().getPracticaEspecifica().getId();
+                            List<Evidencia> deleted  = new ArrayList<>();
+                            evidencias.forEach(evidencia -> {
+                                final int practica = evidencia.getPracticaEspecifica().getId();
                                 if (practicas.stream().noneMatch(p -> p.getId() == practica)) {
-                                    iterator.remove();
+                                    deleted.add(evidencia);
                                 } else practicas.removeIf(p -> p.getId() == practica);
-                            }
+                            });
+                            evidencias.removeAll(deleted);
+                            evidenciaRepository.deleteInBatch(deleted);
                             practicas.forEach(practica -> {
                                 Evidencia evidencia = new Evidencia();
                                 evidencia.setInstancia(instancia);
