@@ -7,6 +7,7 @@ import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.repository.HipervinculoRepository;
 import com.pi.appraisal.util.Credentials;
+import com.pi.appraisal.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,13 +67,13 @@ public class HipervinculoController {
      * @return El mensaje de elminado si es aplicable
      */
     @DeleteMapping("{hipervinculo}")
-    public ResponseEntity<HipervinculoImpl> remove(@PathVariable("hipervinculo") Integer hipervinculoIn,
-                                                   @RequestHeader("Credentials") String credentials) {
+    public ResponseEntity<Response> delete(@PathVariable("hipervinculo") Integer hipervinculoIn,
+                                           @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> hipervinculoRepository.findByUsuario(hipervinculoIn, usuario))                          //Si es valido, buscar hypervinculo con el usuario
                 .map(hipervinculo -> {
                     hipervinculoRepository.delete(hipervinculo);                                                        //Eliminar hypervinculo
-                    return ResponseEntity.ok(Impl.to(hipervinculo));                                                  //Enviar hypervinculo eliminado
+                    return Response.ok("Deleted Successfully");                                                   //Enviar respuesta
                 }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
     }
 

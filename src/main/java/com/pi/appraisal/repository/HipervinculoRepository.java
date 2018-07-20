@@ -18,7 +18,7 @@ public interface HipervinculoRepository extends Repository<Hipervinculo, Integer
             + " JOIN Instancia i ON e.instancia = i.id "
             + " JOIN Organizacion o ON i.organizacion = o.id "
             + " JOIN Usuario u ON u.organizacion = o.id"
-            + " WHERE e.id = :evidencia AND u.id = :usuario AND h.id = :hipervinculo")
+            + " WHERE u.id = :usuario AND h.id = :hipervinculo")
     Hipervinculo findByUsuario(
             @Param("hipervinculo") Integer hipervinculo,
             @Param("usuario") Integer usuario

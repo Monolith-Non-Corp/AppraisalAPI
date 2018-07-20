@@ -7,6 +7,7 @@ import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.repository.ArtefactoRepository;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.util.Credentials;
+import com.pi.appraisal.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -80,13 +81,13 @@ public class ArtefactoController {
      * @return El {@link com.pi.appraisal.entity.Artefacto} elminado si es aplicable
      */
     @DeleteMapping("{artefacto}")
-    public ResponseEntity<ArtefactoImpl> delete(@PathVariable("artefacto") Integer artefactoIn,
-                                                @RequestHeader("Credentials") String credentials) {
+    public ResponseEntity<Response> delete(@PathVariable("artefacto") Integer artefactoIn,
+                                           @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
                 .map(usuario -> artefactoRepository.findByUsuario(artefactoIn, usuario))                                //Si es valido, buscar el artefacto con el usuario
                 .map(artefacto -> {
                     artefactoRepository.delete(artefacto);                                                              //Eliminar aretfacto
-                    return ResponseEntity.ok(Impl.to(artefacto));                                                     //Enviar artefacto eliminado
+                    return Response.ok("Deleted Successfully");                                                   //Enviar respuesta
                 }).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                      //Si no es valido, enviar error
     }
 

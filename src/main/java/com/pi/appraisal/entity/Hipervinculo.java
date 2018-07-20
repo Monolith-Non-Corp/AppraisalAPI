@@ -28,6 +28,11 @@ public class Hipervinculo {
         this.fecha = fecha;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        fecha = new Date();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", unique = true, nullable = false)
