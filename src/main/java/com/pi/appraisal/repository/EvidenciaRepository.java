@@ -1,6 +1,8 @@
 package com.pi.appraisal.repository;
 
 import com.pi.appraisal.entity.Evidencia;
+import com.pi.appraisal.entity.Instancia;
+import com.pi.appraisal.entity.PracticaEspecifica;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +13,8 @@ public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
     void deleteInBatch(Iterable<Evidencia> entities);
 
     void delete(Evidencia evidencia);
+
+    Evidencia findByInstanciaAndPracticaEspecifica(Instancia instancia, PracticaEspecifica practicaEspecifica);
 
     @Query("SELECT e FROM Evidencia e "
             + " JOIN Instancia i ON e.instancia = i.id "
