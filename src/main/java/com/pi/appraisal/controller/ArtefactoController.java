@@ -1,9 +1,9 @@
 package com.pi.appraisal.controller;
 
+import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Artefacto;
 import com.pi.appraisal.entity.Artefacto.ArtefactoImpl;
-import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.repository.ArtefactoRepository;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.util.Credentials;
@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.pi.appraisal.entity.UsuarioRol.Priviledge.ORGANIZACION;
 
@@ -108,23 +106,5 @@ public class ArtefactoController {
                 .map(artefacto -> ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)                   //Especificar tipo de contenido
                         .body(artefacto.getArchivo())                                                                   //Enviar archivo
                 ).orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                       //Si no es valido, enviar error
-    }
-
-    /**
-     * Retorna la lista de {@link Artefacto} de la evidencia especificada en {@param evidenciaIn}
-     *
-     * @param evidenciaIn El ID de una {@link com.pi.appraisal.entity.Evidencia}
-     * @param credentials Las {@link Credentials} de la sesion
-     * @return La lista de {@link com.pi.appraisal.entity.Artefacto} si es aplicable
-     */
-    @GetMapping("{evidencia}")
-    public ResponseEntity<List<ArtefactoImpl>> getAll(@PathVariable("evidencia") Integer evidenciaIn,
-                                                      @RequestHeader("Credentials") String credentials) {
-        return session.authenticate(credentials, ORGANIZACION)                                                          //Valida las credenciales
-                .map(usuario -> artefactoRepository.findAllByUsuario(evidenciaIn, usuario).stream()                     //Si es valido, buscar artefactos con el usuario y la evidencia
-                        .map(Impl::to)
-                        .collect(Collectors.toList())
-                ).map(ResponseEntity::ok)                                                                               //Enviar artefactos
-                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());                                        //Si no es valido, enviar error
     }
 }
