@@ -87,7 +87,7 @@ public class UsuarioController {
                         nivelRepository.findByLvl(lvl).ifPresent(nivel -> {
                             nivel.getAreaProcesos().forEach(areaProceso -> {
                                 usuario.getOrganizacion().getInstancias().forEach(instancia -> {
-                                    evidenciaRepository.deleteInBatch(evidenciaRepository.findAllByArea(areaProceso.getId(), instancia.getId()));
+                                    evidenciaRepository.deleteInBatch(evidenciaRepository.findAllByArea(areaProceso.getId(), instancia));
                                 });
                             });
                         });

@@ -33,6 +33,6 @@ public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
             + " WHERE a.id = :area AND e.instancia = :instancia")
     List<Evidencia> findAllByArea(
             @Param("area") Integer area,
-            @Param("instancia") Integer instancia
+            @Param("instancia") Instancia instancia
     );
 }
