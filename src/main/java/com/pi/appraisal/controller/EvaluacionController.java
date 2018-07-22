@@ -31,11 +31,10 @@ public class EvaluacionController {
     }
 
     @GetMapping("{organizacion}")
-    public ResponseEntity<Status> validate(@PathVariable("organizacion") Integer organizacionIn,
+    public ResponseEntity<StatusImpl> validate(@PathVariable("organizacion") Integer organizacionIn,
                                            @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
-                .map(usuario -> organizacionRepository.findByUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
-                .map(organizacion -> {
+                .map(usuario -> organizacionRepository.findById(organizacionIn).map(organizacion -> {
                     Status status = null;
                     outerLoop:
                     for (Instancia instancia : organizacion.getInstancias()) {                                          //Por cada instancia de la organizacion
@@ -46,32 +45,33 @@ public class EvaluacionController {
                             if (status == null) {
                                 if (arts.isEmpty() && hips.isEmpty()) status = Status.NO_CUMPLE;                        //Si ninguna cumple, no cumple
                                 else status = Status.SI_CUMPLE;                                                         //Si todas tienen evidencias, cumple
-                            } else switch (status) {                                                                    //Si una no tiene, en progreso
-                                case NO_CUMPLE:
-                                    if (!arts.isEmpty() || !hips.isEmpty()) {
-                                        status = Status.EN_PROGRESO;
-                                        break outerLoop;
-                                    }
-                                    break innerLoop;
-                                case SI_CUMPLE:
-                                    if (arts.isEmpty() && hips.isEmpty()) {
-                                        status = Status.EN_PROGRESO;
-                                        break outerLoop;
-                                    }
-                                    break innerLoop;
-                            }
+                            } else
+                                switch (status) {                                                                       //Si una no tiene, en progreso
+                                    case NO_CUMPLE:
+                                        if (!arts.isEmpty() || !hips.isEmpty()) {
+                                            status = Status.EN_PROGRESO;
+                                            break outerLoop;
+                                        }
+                                        break innerLoop;
+                                    case SI_CUMPLE:
+                                        if (arts.isEmpty() && hips.isEmpty()) {
+                                            status = Status.EN_PROGRESO;
+                                            break outerLoop;
+                                        }
+                                        break innerLoop;
+                                }
                         }
                     }
-                    return ResponseEntity.ok(status != null ? status : Status.NO_CUMPLE);                               //Si todas tienen evidencias, cumple, si una no tiene, en progreso, si ninguna cunple,
-                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
+                    return ResponseEntity.ok(status != null ? status.send() : Status.NO_CUMPLE.send());                               //Si todas tienen evidencias, cumple, si una no tiene, en progreso, si ninguna cunple,
+                }).orElse(ResponseEntity.notFound().build()))
+                .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                           //Si no es valido, enviar error
     }
 
     @GetMapping("missing/{organizacion}")
     public ResponseEntity<List<PracticaEspecificaImpl>> getPracticas(@PathVariable("organizacion") Integer organizacionIn,
                                                                      @RequestHeader("Credentials") String credentials) {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
-                .map(usuario -> organizacionRepository.findByUsuario(organizacionIn, usuario))                     //Si es valido, busca la organizacion
-                .map(organizacion -> {
+                .map(usuario -> organizacionRepository.findById(organizacionIn).map(organizacion -> {
                     List<PracticaEspecificaImpl> list = new ArrayList<>();                                              //Crear lista de evidencias incompletas
                     organizacion.getInstancias().forEach(instancia -> instancia.getEvidencias().forEach(evidencia -> {  //Por cada instancia
                         if (evidencia.getArtefactos().isEmpty() && evidencia.getHipervinculos().isEmpty()) {            //Si no tiene evidencias
@@ -79,7 +79,8 @@ public class EvaluacionController {
                         }
                     }));
                     return ResponseEntity.ok(list);                                                                     //Regresar lista
-                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
+                }).orElse(ResponseEntity.notFound().build()))
+                .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                           //Si no es valido, enviar error
     }
 
     public enum Status {
@@ -94,5 +95,17 @@ public class EvaluacionController {
             this.message = message;
             this.color = color;
         }
+
+        public StatusImpl send() {
+            StatusImpl status = new StatusImpl();
+            status.message =  message;
+            status.color = color;
+            return status;
+        }
+    }
+
+    public static class StatusImpl {
+        public String message;
+        public Integer color;
     }
 }
