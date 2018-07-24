@@ -36,30 +36,33 @@ public class EvaluacionController {
         return session.authenticate(credentials, ADMINISTRADOR)                                                         //Valida las credenciales
                 .map(usuario -> organizacionRepository.findById(organizacionIn).map(organizacion -> {
                     Status status = null;
-                    outerLoop:
-                    for (Instancia instancia : organizacion.getInstancias()) {                                          //Por cada instancia de la organizacion
-                        innerLoop:
-                        for (Evidencia evidencia : instancia.getEvidencias()) {                                         //Por cada evidencia de la instancia
+                    outerLoop: for (Instancia instancia : organizacion.getInstancias()) {
+                        Set<Evidencia> evidencias = instancia.getEvidencias();
+                        innerLoop: for (Evidencia evidencia : evidencias) {
                             Set<Artefacto> arts = evidencia.getArtefactos();
                             Set<Hipervinculo> hips = evidencia.getHipervinculos();
                             if (status == null) {
-                                if (arts.isEmpty() && hips.isEmpty()) status = Status.NO_CUMPLE;                        //Si ninguna cumple, no cumple
-                                else status = Status.SI_CUMPLE;                                                         //Si todas tienen evidencias, cumple
-                            } else
-                                switch (status) {                                                                       //Si una no tiene, en progreso
+                                if (arts.isEmpty() && hips.isEmpty()) status = Status.NO_CUMPLE;
+                                else status = Status.SI_CUMPLE;
+                            } else{
+                                switch (status) {
                                     case NO_CUMPLE:
                                         if (!arts.isEmpty() || !hips.isEmpty()) {
                                             status = Status.EN_PROGRESO;
                                             break outerLoop;
+                                        } else {
+                                            continue innerLoop;
                                         }
-                                        break innerLoop;
                                     case SI_CUMPLE:
                                         if (arts.isEmpty() && hips.isEmpty()) {
                                             status = Status.EN_PROGRESO;
                                             break outerLoop;
+                                        } else {
+                                           continue innerLoop;
                                         }
-                                        break innerLoop;
+                                    default: 
                                 }
+                            }
                         }
                     }
                     return ResponseEntity.ok(status != null ? status.send() : Status.NO_CUMPLE.send());                               //Si todas tienen evidencias, cumple, si una no tiene, en progreso, si ninguna cunple,
