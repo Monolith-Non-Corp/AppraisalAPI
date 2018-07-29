@@ -35,4 +35,14 @@ public interface EvidenciaRepository extends Repository<Evidencia, Integer> {
             @Param("area") Integer area,
             @Param("instancia") Instancia instancia
     );
+
+    @Query("SELECT e FROM Evidencia e"
+            + " JOIN PracticaEspecifica p ON p.id = e.practicaEspecifica"
+            + " JOIN Instancia i ON i.id = e.instancia"
+            + " JOIN Organizacion o ON o.id = i.organizacion"
+            + " WHERE p.id = :practica AND o.id = :org")
+    List<Evidencia> findAllByEvaluation(
+            @Param("practica") Integer practica,
+            @Param("org") Integer org
+    );
 }
