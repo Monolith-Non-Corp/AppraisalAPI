@@ -15,6 +15,8 @@ public interface UsuarioRepository extends Repository<Usuario, Integer> {
 
     Optional<Usuario> findByUsernameAndPassword(String username, String password);
 
+    Optional<Usuario> findByUsername(String username);
+
     Optional<Usuario> findById(Integer id);
 
     List<Usuario> findAllByUsuarioRolIsNotLike(UsuarioRol usuarioRol);

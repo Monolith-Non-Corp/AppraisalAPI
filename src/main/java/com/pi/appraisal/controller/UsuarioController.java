@@ -4,10 +4,13 @@ import com.pi.appraisal.component.Impl;
 import com.pi.appraisal.component.SessionCache;
 import com.pi.appraisal.entity.Usuario;
 import com.pi.appraisal.entity.Usuario.UsuarioImpl;
-import com.pi.appraisal.entity.UsuarioRol.UsuarioRolImpl;
-import com.pi.appraisal.repository.*;
+import com.pi.appraisal.repository.EvidenciaRepository;
+import com.pi.appraisal.repository.NivelRepository;
+import com.pi.appraisal.repository.UsuarioRepository;
+import com.pi.appraisal.repository.UsuarioRolRepository;
 import com.pi.appraisal.util.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,9 +53,13 @@ public class UsuarioController {
                 ).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
-    @GetMapping("roles")
-    public ResponseEntity<List<UsuarioRolImpl>> getAllRoles() {
-        return ResponseEntity.ok(usuarioRolRepository.findAll().stream().map(Impl::to).collect(Collectors.toList()));
+    @GetMapping("username")
+    public ResponseEntity<Response> getIsEmailTaken(@RequestParam("email") String email,
+                                                    @RequestHeader("Credentials") String credentials) {
+        return session.authenticate(credentials, ADMINISTRADOR).pipe(() -> {
+            boolean valid = !usuarioRepository.findByUsername(email).isPresent();
+            return Response.ok(valid ? EmailStatus.AVAILABLE.name() : EmailStatus.UN_AVAILABLE.name());
+        }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
     }
 
     @PostMapping
@@ -110,5 +117,10 @@ public class UsuarioController {
                     return Response.ok("Deleted successfully");
                 }).orElse(ResponseEntity.notFound().build()))
                 .orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
+    enum EmailStatus {
+        UN_AVAILABLE,
+        AVAILABLE
     }
 }

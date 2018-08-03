@@ -81,15 +81,14 @@ public class SessionController {
      */
     @GetMapping("validate")
     public ResponseEntity<Response> validate(@RequestHeader("Credentials") String credentials) {
-        return session.authenticate(credentials, UsuarioRol.Priviledge.ANY)                                             //Valida las credenciales
-                .map(usuario -> {
-                    boolean valid = usuarioRepository.exists(Example.of(new Usuario(usuario)));                        //Valida si el usuario existe
-                    if (valid) {
-                        return Response.ok("Session is active");                                                  //Si existe, la sesion se mantiene
-                    } else {
-                        session.remove(credentials);                                                                    //Si no existe, la sesion se termina
-                        return Response.status(HttpStatus.FORBIDDEN, "Session is inactive");
-                    }
-                }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                         //Si no es valido, enviar error
+        return session.authenticate(credentials, UsuarioRol.Priviledge.ANY).map(usuario -> {                            //Valida las credenciales
+            boolean valid = usuarioRepository.findById(usuario).isPresent();                                            //Valida si el usuario existe
+            if (valid) {
+                return Response.ok("Session is active");                                                          //Si existe, la sesion se mantiene
+            } else {
+                session.remove(credentials);                                                                            //Si no existe, la sesion se termina
+                return Response.status(HttpStatus.FORBIDDEN, "Session is inactive");
+            }
+        }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());                                                 //Si no es valido, enviar error
     }
 }
