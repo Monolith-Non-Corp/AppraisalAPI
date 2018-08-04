@@ -1,6 +1,7 @@
 package com.pi.appraisal.controller;
 
 import com.pi.appraisal.component.SessionCache;
+import com.pi.appraisal.entity.Evidencia;
 import com.pi.appraisal.repository.EvidenciaRepository;
 import com.pi.appraisal.repository.NivelRepository;
 import com.pi.appraisal.repository.OrganizacionRepository;
@@ -53,13 +54,16 @@ public class EvaluacionController {
                                                     .setDescription(meta.getDescripcion());
                                             meta.getPracticaEspecificas().forEach(practica -> {
                                                 metaNode.add(practicaNode -> { practicaNode
-                                                            .setId(practica.getId())
-                                                            .setName(practica.getNombre())
-                                                            .setDescription(practica.getDescripcion());
-                                                    practicaNode.setCompleted(evidenciaRepository
-                                                            .findAllByEvaluation(practica.getId(), organizacion.getId()).stream()
-                                                            .anyMatch(e -> !e.getHipervinculos().isEmpty() || !e.getArtefactos().isEmpty())
-                                                    );
+                                                        .setId(practica.getId())
+                                                        .setName(practica.getNombre())
+                                                        .setDescription(practica.getDescripcion());
+                                                    List<Evidencia> list = evidenciaRepository.findAllByEvaluation(practica.getId(), organizacion.getId());
+                                                    if(!list.isEmpty()) {
+                                                        practicaNode.setProgress((float) list.stream()
+                                                                .mapToDouble(e -> !e.getHipervinculos().isEmpty()
+                                                                        || !e.getArtefactos().isEmpty() ? 1F : 0F
+                                                                ).sum() / (float) list.size());
+                                                    }
                                                 });
                                             });
                                         });
@@ -125,8 +129,8 @@ public class EvaluacionController {
                             fifth.data.id = node3.id;
                             fifth.data.name = node3.name;
                             fifth.data.description = node3.description;
-                            fifth.data.status = node3.completed ? Status.SI_CUMPLE : Status.NO_CUMPLE;
-                            fifth.data.progress = node3.completed ? 1F : 0F;
+                            fifth.data.status = node3.progress == 0F ? Status.NO_CUMPLE : node3.progress == 1F ? Status.SI_CUMPLE : Status.EN_PROGRESO;
+                            fifth.data.progress = node3.progress;
                             fourth.children.add(fifth);
                         }
                         third.children.add(fourth.calculate());
@@ -143,7 +147,7 @@ public class EvaluacionController {
             public Integer id;
             private String name;
             private String description;
-            private boolean completed;
+            private float progress;
 
             public StatusNodeBuilder setId(Integer id) {
                 this.id = id;
@@ -160,8 +164,8 @@ public class EvaluacionController {
                 return this;
             }
 
-            public StatusNodeBuilder setCompleted(boolean completed) {
-                this.completed = completed;
+            public StatusNodeBuilder setProgress(float progress) {
+                this.progress = progress;
                 return this;
             }
 
