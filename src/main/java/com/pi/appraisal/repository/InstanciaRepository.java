@@ -15,6 +15,8 @@ public interface InstanciaRepository extends Repository<Instancia, Integer> {
 
     void delete(Instancia instancia);
 
+    Optional<Instancia> findByNombre(String name);
+
     Optional<Instancia> findById(Integer id);
 
     List<Instancia> findAllByOrganizacion(Organizacion organizacion);

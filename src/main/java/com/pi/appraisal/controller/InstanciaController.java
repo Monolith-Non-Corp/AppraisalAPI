@@ -46,6 +46,15 @@ public class InstanciaController {
         this.session = session;
     }
 
+    @GetMapping("name")
+    public ResponseEntity<Response> getIsNameTaken(@RequestParam("title") String title,
+                                                    @RequestHeader("Credentials") String credentials) {
+        return session.authenticate(credentials, ADMINISTRADOR).pipe(() -> {
+            boolean valid = !instanciaRepository.findByNombre(title).isPresent();
+            return Response.ok(valid ? UsuarioController.EmailStatus.AVAILABLE.name() : UsuarioController.EmailStatus.UN_AVAILABLE.name());
+        }).orElse(ResponseEntity.status(HttpStatus.FORBIDDEN).build());
+    }
+
     @GetMapping("tipos")
     public ResponseEntity<List<InstanciaTipoImpl>> getTipos() {
         return ResponseEntity.ok(instanciaTipoRepository.findAll().stream().map(Impl::to).collect(Collectors.toList()));
